@@ -1,22 +1,23 @@
-import { Component, ChangeDetectionStrategy, input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, computed } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
+import { TickerData } from '../../models/binance.models';
+import { APP_CONFIG } from '../../constants/app.constants';
 
 @Component({
   selector: 'app-ticker-card',
-  standalone: true,
-  imports: [CommonModule, DecimalPipe],
+  imports: [DecimalPipe],
   template: `
     <div class="crypto-card" [class.flash-up]="ticker().direction === 'up'" [class.flash-down]="ticker().direction === 'down'">
       <div class="card-header">
-        <span class="symbol">{{ ticker().symbol.replace('USDT', '') }}</span>
+        <span class="symbol">{{ displaySymbol() }}</span>
         <span class="price-change" [class.positive]="ticker().priceChangePercent > 0" [class.negative]="ticker().priceChangePercent < 0">
-          {{ ticker().priceChangePercent > 0 ? '+' : '' }}{{ ticker().priceChangePercent | number:'1.2-2' }}%
+          {{ changePrefix() }}{{ ticker().priceChangePercent | number:'1.2-2' }}%
         </span>
       </div>
       
       <div class="price-section">
         <span class="price" [class.up]="ticker().direction === 'up'" [class.down]="ticker().direction === 'down'">
-          \${{ ticker().price | number:'1.2-4' }}
+          \${{ ticker().price | number:priceFormat() }}
         </span>
       </div>
 
@@ -30,7 +31,7 @@ import { CommonModule, DecimalPipe } from '@angular/common';
           <span class="stat-value">{{ ticker().low | number:'1.2-2' }}</span>
         </div>
         <div class="stat-item full-width">
-          <span class="stat-label">Volume (USDT)</span>
+          <span class="stat-label">Volume ({{ config.QUOTE_ASSET }})</span>
           <span class="stat-value">{{ ticker().volume | number:'1.0-0' }}</span>
         </div>
       </div>
@@ -40,5 +41,11 @@ import { CommonModule, DecimalPipe } from '@angular/common';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TickerCardComponent {
-  ticker = input.required<any>();
+  ticker = input.required<TickerData>();
+  readonly config = APP_CONFIG;
+
+  // Use computed signals for derived state - much more efficient than getters or functions in templates
+  readonly displaySymbol = computed(() => this.ticker().symbol.replace(APP_CONFIG.QUOTE_ASSET, ''));
+  readonly changePrefix = computed(() => this.ticker().priceChangePercent > 0 ? '+' : '');
+  readonly priceFormat = computed(() => this.ticker().price < 1 ? '1.2-6' : '1.2-4');
 }

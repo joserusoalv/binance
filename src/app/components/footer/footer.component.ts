@@ -1,11 +1,11 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { APP_CONFIG } from '../../constants/app.constants';
 
 @Component({
   selector: 'app-footer',
-  standalone: true,
   template: `
     <footer class="footer">
-      <p>© 2026 CryptoPulse • Real-time Binance Feed • Professional Dashboard</p>
+      <p>{{ config.FOOTER_TEXT }}</p>
     </footer>
   `,
   styles: [`
@@ -19,4 +19,6 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
   `],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FooterComponent {}
+export class FooterComponent {
+  readonly config = APP_CONFIG;
+}

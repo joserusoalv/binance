@@ -1,17 +1,18 @@
 import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TickerCardComponent } from '../ticker-card/ticker-card.component';
+import { TickerData } from '../../models/binance.models';
+import { MARKET_CONFIG } from '../../constants/app.constants';
 
 @Component({
   selector: 'app-ticker-grid',
-  standalone: true,
-  imports: [CommonModule, TickerCardComponent],
+  imports: [TickerCardComponent],
   template: `
     <main class="grid-container">
       @if (isLoading()) {
         <div class="status-overlay">
           <div class="spinner"></div>
-          <p>Connecting to Binance...</p>
+          <p>{{ loadingMessage }}</p>
         </div>
       } @else if (tickers().length > 0) {
         @for (ticker of tickers(); track ticker.symbol) {
@@ -19,16 +20,18 @@ import { TickerCardComponent } from '../ticker-card/ticker-card.component';
         }
       } @else {
         <div class="status-overlay empty">
-          <span class="empty-icon">🔍</span>
-          <p>Your dashboard is empty</p>
+          <span class="empty-icon">{{ emptyIcon }}</span>
+          <p>{{ emptyMessage }}</p>
           <div class="suggestions">
-            <span>Quick start:</span>
+            <span>{{ suggestionLabel }}</span>
             <button class="suggestion-btn" (click)="restoreDefaults.emit()">Restore Defaults</button>
-            <button class="suggestion-btn" (click)="suggestionClicked.emit('BTCUSDT')">BTC</button>
-            <button class="suggestion-btn" (click)="suggestionClicked.emit('ETHUSDT')">ETH</button>
-            <button class="suggestion-btn" (click)="suggestionClicked.emit('SOLUSDT')">SOL</button>
+            @for (item of quickStartSymbols; track item) {
+              <button class="suggestion-btn" (click)="suggestionClicked.emit(item + 'USDT')">
+                {{ item }}
+              </button>
+            }
           </div>
-          <small>Or use the search bar above to find any USDT pair</small>
+          <small>{{ footerNote }}</small>
         </div>
       }
     </main>
@@ -37,9 +40,17 @@ import { TickerCardComponent } from '../ticker-card/ticker-card.component';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TickerGridComponent {
-  tickers = input.required<any[]>();
+  tickers = input.required<TickerData[]>();
   isLoading = input<boolean>(false);
 
   suggestionClicked = output<string>();
   restoreDefaults = output<void>();
+
+  readonly loadingMessage = 'Connecting to Binance...';
+  readonly emptyMessage = 'Your dashboard is empty';
+  readonly emptyIcon = '🔍';
+  readonly suggestionLabel = 'Quick start:';
+  readonly footerNote = 'Or use the search bar above to find any USDT pair';
+  
+  readonly quickStartSymbols = MARKET_CONFIG.QUICK_START_SYMBOLS;
 }

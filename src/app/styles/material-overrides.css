@@ -1,0 +1,83 @@
+/* Global Material Design Overrides */
+
+/* Overlays (Select & Autocomplete Panels) */
+.mat-mdc-select-panel, 
+.mat-mdc-autocomplete-panel {
+  background-color: var(--bg-overlay) !important;
+  border: var(--border-width) solid var(--border-strong) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--card-shadow-hover) !important;
+  opacity: 1 !important;
+}
+
+.cdk-overlay-pane {
+  opacity: 1 !important;
+}
+
+.mat-mdc-option {
+  color: var(--text-main) !important;
+  font-family: var(--font-main) !important;
+  font-size: 13px;
+  min-height: 40px;
+}
+
+.mat-mdc-option:hover:not(.mdc-list-item--disabled),
+.mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+  background-color: var(--border-subtle) !important;
+}
+
+.mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) .mdc-list-item__primary-text {
+  color: var(--accent-primary) !important;
+}
+
+/* Form Fields */
+.mat-mdc-form-field {
+  width: 100%;
+}
+
+.mat-mdc-text-field-wrapper {
+  background-color: var(--bg-card) !important;
+  border-radius: var(--radius-md) !important;
+  border: var(--border-width) solid var(--border-subtle) !important;
+}
+
+.mat-mdc-form-field-focus-indicator {
+  display: none;
+}
+
+.mdc-text-field--filled:not(.mdc-text-field--disabled) {
+  background-color: transparent !important;
+}
+
+/* Specific adjustments for Chip Select Field */
+.chip-select-field .mat-mdc-form-field-flex {
+  padding-top: 20px !important;
+  padding-bottom: 8px !important;
+}
+
+.chip-select-field .mat-mdc-form-field-label-wrapper {
+  top: -12px !important;
+  padding-top: 12px !important;
+}
+
+/* Chips Overrides */
+.mat-mdc-chip-row {
+  background-color: var(--bg-primary) !important;
+  border: var(--border-width) solid var(--border-strong) !important;
+  color: var(--text-main) !important;
+  --mdc-chip-elevated-container-color: var(--bg-primary);
+  --mdc-chip-label-text-color: var(--text-main);
+  height: 28px !important;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+.mat-mdc-chip-remove {
+  color: var(--text-muted) !important;
+  opacity: 1 !important;
+  margin-left: 4px !important;
+}
+
+.mat-mdc-chip-remove:hover {
+  color: var(--color-down) !important;
+}

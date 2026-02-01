@@ -1,3 +1,4 @@
+@import "./app/styles/material-overrides.css";
 @import "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap";
 
 /* 
@@ -103,32 +104,4 @@ body {
   transition: background-color var(--transition-slow), color var(--transition-slow);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
-}
-
-/* Material Overrides using Tokens */
-.mat-mdc-select-panel, .mat-mdc-autocomplete-panel {
-  background-color: var(--bg-overlay) !important;
-  border: var(--border-width) solid var(--border-strong) !important;
-  border-radius: var(--radius-md) !important;
-  box-shadow: var(--card-shadow-hover) !important;
-  opacity: 1 !important;
-}
-
-/* Ensure autocomplete panel stays opaque even with Material theme defaults */
-.cdk-overlay-pane {
-  opacity: 1 !important;
-}
-
-.mat-mdc-option {
-  color: var(--text-main) !important;
-  font-family: var(--font-main) !important;
-}
-
-.mat-mdc-option:hover:not(.mdc-list-item--disabled),
-.mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
-  background-color: var(--border-subtle) !important;
-}
-
-.mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) .mdc-list-item__primary-text {
-  color: var(--accent-primary) !important;
 }
