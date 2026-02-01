@@ -11,32 +11,56 @@ export class BinanceService implements OnDestroy {
   private destroyRef = inject(DestroyRef);
   private socket: WebSocket | null = null;
   private readonly REST_API_URL = 'https://api1.binance.com/api/v3/ticker/24hr';
+  private readonly EXCHANGE_INFO_URL = 'https://api1.binance.com/api/v3/exchangeInfo';
   private readonly WS_URL = 'wss://stream.binance.com:9443/ws/!ticker@arr';
 
   // State
-  private tickersSignal = signal<Map<string, TickerData>>(new Map());
+  private allTickersMap = signal<Map<string, TickerData>>(new Map());
+  readonly availableSymbols = signal<string[]>([]);
+  readonly selectedSymbols = signal<string[]>(['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT', 'ADAUSDT', 'XRPUSDT']);
+  readonly isLoading = signal(true);
+
+  readonly DEFAULT_SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT', 'ADAUSDT', 'XRPUSDT'];
+
+  resetToDefaults() {
+    this.selectedSymbols.set([...this.DEFAULT_SYMBOLS]);
+  }
 
   // Derived signals
-  readonly tickers = computed(() => Array.from(this.tickersSignal().values()));
-  readonly btcTicker = computed(() => this.tickersSignal().get('BTCUSDT'));
+  readonly tickers = computed(() => {
+    const selected = this.selectedSymbols();
+    const all = this.allTickersMap();
+    return selected.map(s => all.get(s)).filter((t): t is TickerData => !!t);
+  });
+
+  readonly btcTicker = computed(() => this.allTickersMap().get('BTCUSDT'));
 
   constructor() {
+    this.fetchAvailableSymbols();
     this.initialize();
   }
 
-  private initialize() {
-    // Definimos los pares que nos interesan
-    const majorPairs = new Set(['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT', 'ADAUSDT', 'XRPUSDT', 'DOTUSDT', 'DOGEUSDT', 'MATICUSDT', 'AVAXUSDT']);
+  private fetchAvailableSymbols() {
+    this.http.get<any>(this.EXCHANGE_INFO_URL)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(data => {
+        const symbols = data.symbols
+          .filter((s: any) => s.status === 'TRADING' && s.quoteAsset === 'USDT')
+          .map((s: any) => s.symbol)
+          .sort();
+        this.availableSymbols.set(symbols);
+      });
+  }
 
+  private initialize() {
     // Initial load from REST API
-    // Usamos takeUntilDestroyed para asegurar limpieza si el servicio se destruye
     this.http.get<any[]>(this.REST_API_URL)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(data => {
         const initialMap = new Map<string, TickerData>();
         
         for (const item of data) {
-          if (majorPairs.has(item.symbol)) {
+          if (item.symbol.endsWith('USDT')) {
             initialMap.set(item.symbol, {
               symbol: item.symbol,
               price: parseFloat(item.lastPrice),
@@ -49,7 +73,8 @@ export class BinanceService implements OnDestroy {
           }
         }
         
-        this.tickersSignal.set(initialMap);
+        this.allTickersMap.set(initialMap);
+        this.isLoading.set(false);
         this.connectWebSocket();
       });
   }
@@ -71,20 +96,18 @@ export class BinanceService implements OnDestroy {
     };
 
     this.socket.onclose = () => {
-      // Reintento solo si no hemos destruido el servicio
       console.log('WebSocket connection closed.');
     };
   }
 
   private updateTickers(messages: TickerWebSocketMessage[]) {
-    this.tickersSignal.update(currentMap => {
-      // Evitamos crear un nuevo mapa si no hay cambios relevantes, 
-      // aunque para Signals, mutation directa del mapa no dispararía el cambio,
-      // por eso creamos una copia superficial.
+    this.allTickersMap.update(currentMap => {
       const newMap = new Map(currentMap);
       let hasChanges = false;
       
       for (const msg of messages) {
+        // We update all tickers in the map, regardless of whether they are selected,
+        // so that if the user selects them later, they have fresh data.
         if (newMap.has(msg.s)) {
           const current = newMap.get(msg.s)!;
           const newPrice = parseFloat(msg.c);
@@ -104,6 +127,19 @@ export class BinanceService implements OnDestroy {
             direction
           });
           hasChanges = true;
+        } else if (msg.s.endsWith('USDT')) {
+            // If it's a new USDT pair we haven't seen in the initial REST call
+            newMap.set(msg.s, {
+                symbol: msg.s,
+                price: parseFloat(msg.c),
+                priceChangePercent: parseFloat(msg.P),
+                volume: parseFloat(msg.q),
+                high: parseFloat(msg.h),
+                low: parseFloat(msg.l),
+                lastUpdated: Date.now(),
+                direction: 'neutral'
+            });
+            hasChanges = true;
         }
       }
       
@@ -111,9 +147,10 @@ export class BinanceService implements OnDestroy {
     });
   }
 
-  /**
-   * Permite cerrar la conexión manualmente si fuera necesario
-   */
+  updateSelectedSymbols(symbols: string[]) {
+    this.selectedSymbols.set(symbols);
+  }
+
   disconnect() {
     if (this.socket) {
       this.socket.close();

@@ -1,0 +1,120 @@
+:host {
+  display: block;
+}
+
+.header {
+  min-height: var(--header-height);
+  padding: var(--space-sm) var(--space-xl);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-secondary);
+  border-bottom: var(--border-width) solid var(--border-subtle);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  gap: var(--space-lg);
+  backdrop-filter: blur(var(--glass-blur));
+  transition: all var(--transition-slow);
+}
+
+.header-left, .header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  min-width: fit-content;
+}
+
+.filter-section {
+  flex: 1;
+  max-width: 500px;
+}
+
+.theme-toggle {
+  background: var(--bg-card);
+  border: var(--border-width) solid var(--border-strong);
+  color: var(--text-main);
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  padding: 0;
+}
+
+.theme-toggle:hover {
+  transform: rotate(15deg) scale(1.1);
+  border-color: var(--accent-primary);
+  background: var(--border-subtle);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.logo .icon {
+  font-size: var(--font-size-xl);
+}
+
+.logo h1 {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  background: var(--accent-gradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.market-overview {
+  padding-right: var(--space-md);
+  border-right: var(--border-width) solid var(--border-subtle);
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.stat .label {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat .value {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-md);
+  transition: color var(--transition-fast);
+}
+
+.up { color: var(--color-up); }
+.down { color: var(--color-down); }
+
+@media (max-width: 900px) {
+  .header {
+    height: auto;
+    padding: var(--space-md);
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  
+  .filter-section {
+    order: 3;
+    max-width: 100%;
+    margin-top: var(--space-md);
+  }
+}
+
+@media (max-width: 600px) {
+  .market-overview {
+    display: none;
+  }
+}

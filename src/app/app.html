@@ -1,78 +1,15 @@
 <div class="dashboard-container">
-  <header class="header">
-    <div class="logo">
-      <span class="icon">⚡</span>
-      <h1>CryptoPulse</h1>
-    </div>
-    @if (btcTicker(); as btc) {
-      <div class="market-overview">
-        <div class="stat">
-          <span class="label">BTC/USDT</span>
-          <span
-            class="value"
-            [class.up]="btc.direction === 'up'"
-            [class.down]="btc.direction === 'down'"
-          >
-            ${{ btc.price | number: '1.2-2' }}
-          </span>
-        </div>
-      </div>
-    }
-  </header>
+  <app-header 
+    [theme]="theme()"
+    [form]="form"
+    [fields]="fields"
+    [model]="model"
+    [btcTicker]="btcTicker()"
+    (themeToggle)="toggleTheme()"
+    (modelChange)="onModelChange()">
+  </app-header>
 
-  <main class="grid-container">
-    @for (ticker of tickers(); track ticker.symbol) {
-      <div
-        class="crypto-card"
-        [class.flash-up]="ticker.direction === 'up'"
-        [class.flash-down]="ticker.direction === 'down'"
-      >
-        <div class="card-header">
-          <span class="symbol">{{ ticker.symbol.replace('USDT', '') }}</span>
-          <span
-            class="price-change"
-            [class.positive]="ticker.priceChangePercent > 0"
-            [class.negative]="ticker.priceChangePercent < 0"
-          >
-            {{ ticker.priceChangePercent > 0 ? '+' : ''
-            }}{{ ticker.priceChangePercent | number: '1.2-2' }}%
-          </span>
-        </div>
+  <app-ticker-grid [tickers]="tickers()" [isLoading]="isLoading()"></app-ticker-grid>
 
-        <div class="price-section">
-          <span
-            class="price"
-            [class.up]="ticker.direction === 'up'"
-            [class.down]="ticker.direction === 'down'"
-          >
-            ${{ ticker.price | number: '1.2-4' }}
-          </span>
-        </div>
-
-        <div class="stats-grid">
-          <div class="stat-item">
-            <span class="stat-label">24h High</span>
-            <span class="stat-value">{{ ticker.high | number: '1.2-2' }}</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">24h Low</span>
-            <span class="stat-value">{{ ticker.low | number: '1.2-2' }}</span>
-          </div>
-          <div class="stat-item full-width">
-            <span class="stat-label">Volume (USDT)</span>
-            <span class="stat-value">{{ ticker.volume | number: '1.0-0' }}</span>
-          </div>
-        </div>
-      </div>
-    } @empty {
-      <div class="loading">
-        <div class="spinner"></div>
-        <p>Connecting to Binance...</p>
-      </div>
-    }
-  </main>
-
-  <footer class="footer">
-    <p>Live Market Data via Binance API • Updated in real-time</p>
-  </footer>
+  <app-footer></app-footer>
 </div>
