@@ -9,7 +9,12 @@
     (modelChange)="onModelChange()">
   </app-header>
 
-  <app-ticker-grid [tickers]="tickers()" [isLoading]="isLoading()"></app-ticker-grid>
+  <app-ticker-grid 
+    [tickers]="tickers()" 
+    [isLoading]="isLoading()"
+    (suggestionClicked)="handleSuggestion($event)"
+    (restoreDefaults)="handleRestoreDefaults()">
+  </app-ticker-grid>
 
   <app-footer></app-footer>
 </div>
