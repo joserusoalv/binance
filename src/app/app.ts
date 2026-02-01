@@ -1,12 +1,17 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
+import { BinanceService } from './services/binance.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [DecimalPipe],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrl: './app.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class App {
-  protected readonly title = signal('binance');
+  private binanceService = inject(BinanceService);
+  
+  tickers = this.binanceService.tickers;
+  btcTicker = this.binanceService.btcTicker;
 }
