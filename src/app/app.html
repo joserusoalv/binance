@@ -5,16 +5,20 @@
     [fields]="fields"
     [model]="model()"
     [btcTicker]="btcTicker()"
+    [viewMode]="viewMode()"
     (themeToggle)="toggleTheme()"
     (modelChange)="onModelChange()"
+    (viewModeChange)="viewMode.set($event)"
   >
   </app-header>
 
   <app-ticker-grid
     [tickers]="tickers()"
     [isLoading]="isLoading()"
+    [viewMode]="viewMode()"
     (suggestionClicked)="handleSuggestion($event)"
     (restoreDefaults)="handleRestoreDefaults()"
+    (tickerSelected)="handleTickerSelection($event)"
   >
   </app-ticker-grid>
 

@@ -84,3 +84,36 @@
 .mat-mdc-chip-remove:hover {
   color: var(--color-down) !important;
 }
+/* Large Modal Overrides */
+.ticker-details-dialog-v2 .mat-mdc-dialog-container .mdc-dialog__surface {
+  padding: 0 !important;
+  border-radius: var(--radius-lg) !important;
+  background-color: var(--bg-overlay) !important;
+  border: 1px solid var(--border-strong) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
+  overflow: hidden;
+}
+
+.ticker-details-dialog-v2 .mat-mdc-dialog-content {
+  padding: 0 !important;
+  margin: 0 !important;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Alert Snackbars */
+.alert-snackbar-trigger.above {
+  background-color: var(--color-up) !important;
+  color: #000 !important;
+  font-weight: 700 !important;
+}
+
+.alert-snackbar-trigger.below {
+  background-color: var(--color-down) !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+}
+
+.alert-snackbar-trigger .mdc-snackbar__label {
+  font-size: 16px !important;
+}

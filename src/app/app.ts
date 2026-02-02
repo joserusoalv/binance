@@ -10,8 +10,10 @@ import { BinanceService } from './services/binance.service';
 import { WINDOW } from './tokens/window.token';
 
 // Standalone Components
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
+import { TickerDetailsComponent } from './components/ticker-details/ticker-details.component';
 import { TickerGridComponent } from './components/ticker-grid/ticker-grid.component';
 
 @Component({
@@ -22,6 +24,7 @@ import { TickerGridComponent } from './components/ticker-grid/ticker-grid.compon
     HeaderComponent,
     TickerGridComponent,
     FooterComponent,
+    MatDialogModule,
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',
@@ -33,6 +36,7 @@ export class App implements OnInit {
   private readonly document = inject(DOCUMENT);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly dialog = inject(MatDialog);
 
   readonly theme = signal<Theme>(
     this.window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
@@ -42,6 +46,8 @@ export class App implements OnInit {
   readonly model = signal<DashboardModel>({
     selectedSymbols: this.binanceService.selectedSymbols(),
   });
+
+  readonly viewMode = signal<'grid' | 'table'>('grid');
 
   protected readonly availableOptions$ = toObservable(this.binanceService.availableSymbols).pipe(
     map((symbols): SelectOption[] =>
@@ -136,5 +142,15 @@ export class App implements OnInit {
       selectedSymbols: [...this.binanceService.selectedSymbols()],
     });
     this.onModelChange();
+  }
+
+  handleTickerSelection(symbol: string): void {
+    this.dialog.open(TickerDetailsComponent, {
+      data: { symbol },
+      width: '95vw',
+      height: '90vh',
+      maxWidth: '1800px',
+      panelClass: 'ticker-details-dialog-v2',
+    });
   }
 }

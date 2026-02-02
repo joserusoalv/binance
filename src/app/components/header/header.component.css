@@ -103,6 +103,46 @@
   color: var(--color-down);
 }
 
+.view-toggle {
+  display: flex;
+  background: var(--bg-card);
+  border: var(--border-width) solid var(--border-strong);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  gap: 4px;
+  margin-right: 8px;
+}
+
+.view-toggle button {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.view-toggle button:hover {
+  color: var(--text-main);
+  background: var(--border-subtle);
+}
+
+.view-toggle button.active {
+  background: var(--accent-primary);
+  color: #000;
+}
+
+.view-toggle button mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
 @media (max-width: 900px) {
   .header {
     height: auto;

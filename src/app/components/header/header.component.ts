@@ -1,13 +1,14 @@
 import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
 import { FormlyFieldConfig, FormlyModule } from '@ngx-formly/core';
 import { APP_CONFIG } from '../../constants/app.constants';
 import { DashboardModel, Theme, TickerData } from '../../models/binance.models';
 
 @Component({
   selector: 'app-header',
-  imports: [ReactiveFormsModule, FormlyModule, DecimalPipe],
+  imports: [ReactiveFormsModule, FormlyModule, DecimalPipe, MatIconModule],
   template: `
     <header class="header">
       <div class="header-left">
@@ -44,6 +45,23 @@ import { DashboardModel, Theme, TickerData } from '../../models/binance.models';
             </div>
           </div>
         }
+
+        <div class="view-toggle">
+          <button
+            [class.active]="viewMode() === 'grid'"
+            (click)="viewModeChange.emit('grid')"
+            title="Grid View"
+          >
+            <mat-icon>grid_view</mat-icon>
+          </button>
+          <button
+            [class.active]="viewMode() === 'table'"
+            (click)="viewModeChange.emit('table')"
+            title="Table View"
+          >
+            <mat-icon>view_list</mat-icon>
+          </button>
+        </div>
 
         <button
           class="theme-toggle"
@@ -101,9 +119,11 @@ export class HeaderComponent {
   fields = input.required<FormlyFieldConfig[]>();
   model = input.required<DashboardModel>();
   btcTicker = input.required<TickerData | undefined>();
+  viewMode = input.required<'grid' | 'table'>();
 
   themeToggle = output<void>();
   modelChange = output<void>();
+  viewModeChange = output<'grid' | 'table'>();
 
   readonly config = APP_CONFIG;
   readonly btcLabel = `BTC/${APP_CONFIG.QUOTE_ASSET}`;

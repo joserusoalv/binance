@@ -1,13 +1,19 @@
 import { DecimalPipe, NgOptimizedImage } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
 import { APP_CONFIG } from '../../constants/app.constants';
 import { ImageFallbackDirective } from '../../directives/image-fallback.directive';
 import { TickerData } from '../../models/binance.models';
 import { CryptoIconPipe } from '../../pipes/crypto-icon.pipe';
+import { PortfolioService } from '../../services/portfolio.service';
 
 @Component({
   selector: 'app-ticker-card',
-  imports: [DecimalPipe, NgOptimizedImage, CryptoIconPipe, ImageFallbackDirective],
+  imports: [DecimalPipe, NgOptimizedImage, CryptoIconPipe, ImageFallbackDirective, MatIconModule],
+  host: {
+    '(click)': 'select.emit(ticker().symbol)',
+    class: 'clickable-card',
+  },
   template: `
     <div
       class="crypto-card"
@@ -25,6 +31,11 @@ import { CryptoIconPipe } from '../../pipes/crypto-icon.pipe';
             appImageFallback
           />
           <span class="symbol">{{ displaySymbol() }}</span>
+          @if (holding()) {
+            <span class="holding-badge" title="Portfolio Holding">
+              <mat-icon>account_balance_wallet</mat-icon>
+            </span>
+          }
         </div>
         <span
           class="price-change"
@@ -59,6 +70,17 @@ import { CryptoIconPipe } from '../../pipes/crypto-icon.pipe';
           <span class="stat-value">{{ ticker().volume | number: '1.0-0' }}</span>
         </div>
       </div>
+
+      @if (holding()) {
+        <div class="holding-overlay" [class.up]="holdingPnL() >= 0" [class.down]="holdingPnL() < 0">
+          <div class="holding-pnl">
+            {{ holdingPnL() >= 0 ? '+' : '' }}{{ holdingPnLPercent() | number: '1.2-2' }}%
+          </div>
+          <div class="holding-amount">
+            {{ holding()?.amount | number: '1.1-4' }} {{ displaySymbol() }}
+          </div>
+        </div>
+      }
     </div>
   `,
   styleUrl: './ticker-card.component.css',
@@ -66,10 +88,28 @@ import { CryptoIconPipe } from '../../pipes/crypto-icon.pipe';
 })
 export class TickerCardComponent {
   ticker = input.required<TickerData>();
+  select = output<string>();
   readonly config = APP_CONFIG;
+  private portfolioService = inject(PortfolioService);
 
   // Use computed signals for derived state - much more efficient than getters or functions in templates
   readonly displaySymbol = computed(() => this.ticker().symbol.replace(APP_CONFIG.QUOTE_ASSET, ''));
   readonly changePrefix = computed(() => (this.ticker().priceChangePercent > 0 ? '+' : ''));
   readonly priceFormat = computed(() => (this.ticker().price < 1 ? '1.2-6' : '1.2-4'));
+
+  readonly holding = computed(() =>
+    this.portfolioService.holdings().find((h) => h.symbol === this.ticker().symbol),
+  );
+
+  readonly holdingPnL = computed(() => {
+    const h = this.holding();
+    if (!h) return 0;
+    return (this.ticker().price - h.avgPrice) * h.amount;
+  });
+
+  readonly holdingPnLPercent = computed(() => {
+    const h = this.holding();
+    if (!h || !h.avgPrice) return 0;
+    return ((this.ticker().price - h.avgPrice) / h.avgPrice) * 100;
+  });
 }

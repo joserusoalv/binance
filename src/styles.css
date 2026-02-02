@@ -1,5 +1,4 @@
 @import './app/styles/material-overrides.css';
-@import 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap';
 
 /* 
   CRYPTO PULSE - DESIGN SYSTEM TOKENS
@@ -17,7 +16,7 @@
 
   /* Typography */
   --font-main:
-    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
   --font-size-md: 1rem;
