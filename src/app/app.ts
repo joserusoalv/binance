@@ -1,11 +1,13 @@
-import { Component, ChangeDetectionStrategy, inject, signal, effect, Injector } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, effect, Injector, OnInit } from '@angular/core';
 import { CommonModule, DOCUMENT } from '@angular/common';
 import { ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { FormlyModule, FormlyFieldConfig } from '@ngx-formly/core';
-import { map } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
+import { Router, ActivatedRoute } from '@angular/router';
 import { BinanceService } from './services/binance.service';
 import { DashboardModel, SelectOption, Theme } from './models/binance.models';
+import { MARKET_CONFIG } from './constants/app.constants';
 import { WINDOW } from './tokens/window.token';
 
 // Standalone Components
@@ -26,10 +28,12 @@ import { FooterComponent } from './components/footer/footer.component';
   styleUrl: './app.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class App {
+export class App implements OnInit {
   private readonly binanceService = inject(BinanceService);
   private readonly window = inject(WINDOW);
   private readonly document = inject(DOCUMENT);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   
   readonly theme = signal<Theme>(
     this.window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
@@ -70,6 +74,31 @@ export class App {
     });
   }
 
+  ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      const symbolsParam = params['symbols'];
+      let targetSymbols: string[] = [];
+
+      if (symbolsParam) {
+        targetSymbols = symbolsParam.split(',').filter((s: string) => s);
+      } 
+
+      const current = this.model().selectedSymbols;
+      // Simple equality check to avoid infinite loops if onModelChange writes back
+      if (!this.areArraysEqual(current, targetSymbols)) {
+        this.model.update(m => ({ ...m, selectedSymbols: targetSymbols }));
+        this.binanceService.updateSelectedSymbols(targetSymbols);
+      }
+    });
+  }
+
+  private areArraysEqual(a: string[], b: string[]): boolean {
+    if (a.length !== b.length) return false;
+    const sortedA = [...a].sort();
+    const sortedB = [...b].sort();
+    return sortedA.every((val, index) => val === sortedB[index]);
+  }
+
   toggleTheme(): void {
     this.theme.update(t => t === 'light' ? 'dark' : 'light');
   }
@@ -78,6 +107,15 @@ export class App {
     // We update the signal to notify any observers (if any) and then sync with service
     this.model.update(m => ({ ...m }));
     this.binanceService.updateSelectedSymbols(this.model().selectedSymbols);
+    
+    // Sync to URL
+    const symbols = this.model().selectedSymbols.join(',');
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { symbols: symbols || null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true
+    });
   }
 
   handleSuggestion(symbol: string): void {
@@ -96,5 +134,6 @@ export class App {
     this.model.set({
       selectedSymbols: [...this.binanceService.selectedSymbols()]
     });
+    this.onModelChange();
   }
 }
