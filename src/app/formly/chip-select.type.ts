@@ -40,7 +40,7 @@ import { StripQuotePipe } from '../pipes/strip-quote.pipe';
         <button type="button" class="action-link" (click)="restoreDefaults()">Restore Defaults</button>
       </div>
 
-      <mat-form-field class="chip-select-field" appearance="fill">
+      <mat-form-field class="chip-select-field" appearance="fill" subscriptSizing="dynamic">
         @if (props.label) {
           <mat-label>{{ props.label }}</mat-label>
         }
@@ -53,14 +53,14 @@ import { StripQuotePipe } from '../pipes/strip-quote.pipe';
               </button>
             </mat-chip-row>
           }
+          <input
+            #itemInput
+            [placeholder]="formControl.value?.length ? '' : (props.placeholder || 'Search...')"
+            [formControl]="filterControl"
+            [matChipInputFor]="chipGrid"
+            [matAutocomplete]="auto"
+          />
         </mat-chip-grid>
-        <input
-          #itemInput
-          [placeholder]="formControl.value?.length ? '' : (props.placeholder || 'Search...')"
-          [formControl]="filterControl"
-          [matChipInputFor]="chipGrid"
-          [matAutocomplete]="auto"
-        />
         <mat-autocomplete 
           #auto="matAutocomplete" 
           (optionSelected)="selected($event)"
