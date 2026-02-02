@@ -1,19 +1,21 @@
 <div class="dashboard-container">
-  <app-header 
+  <app-header
     [theme]="theme()"
     [form]="form"
     [fields]="fields"
     [model]="model()"
     [btcTicker]="btcTicker()"
     (themeToggle)="toggleTheme()"
-    (modelChange)="onModelChange()">
+    (modelChange)="onModelChange()"
+  >
   </app-header>
 
-  <app-ticker-grid 
-    [tickers]="tickers()" 
+  <app-ticker-grid
+    [tickers]="tickers()"
     [isLoading]="isLoading()"
     (suggestionClicked)="handleSuggestion($event)"
-    (restoreDefaults)="handleRestoreDefaults()">
+    (restoreDefaults)="handleRestoreDefaults()"
+  >
   </app-ticker-grid>
 
   <app-footer></app-footer>

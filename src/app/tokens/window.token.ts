@@ -1,5 +1,5 @@
-import { InjectionToken, FactoryProvider, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { FactoryProvider, inject, InjectionToken, PLATFORM_ID } from '@angular/core';
 
 export const WINDOW = new InjectionToken<Window & { WebSocket: typeof WebSocket }>('WindowToken');
 
@@ -11,5 +11,5 @@ export const provideWindow = (): FactoryProvider => ({
       return window;
     }
     return {} as Window; // Fallback for SSR
-  }
+  },
 });

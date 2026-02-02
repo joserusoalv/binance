@@ -1,32 +1,31 @@
-import { Component, ChangeDetectionStrategy, inject, signal, effect, Injector, OnInit } from '@angular/core';
-import { CommonModule, DOCUMENT } from '@angular/common';
-import { ReactiveFormsModule, FormGroup } from '@angular/forms';
+import { DOCUMENT } from '@angular/common';
+import { ChangeDetectionStrategy, Component, effect, inject, OnInit, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
-import { FormlyModule, FormlyFieldConfig } from '@ngx-formly/core';
-import { map, take } from 'rxjs/operators';
-import { Router, ActivatedRoute } from '@angular/router';
-import { BinanceService } from './services/binance.service';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { FormlyFieldConfig, FormlyModule } from '@ngx-formly/core';
+import { map } from 'rxjs/operators';
 import { DashboardModel, SelectOption, Theme } from './models/binance.models';
-import { MARKET_CONFIG } from './constants/app.constants';
+import { BinanceService } from './services/binance.service';
 import { WINDOW } from './tokens/window.token';
 
 // Standalone Components
+import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
 import { TickerGridComponent } from './components/ticker-grid/ticker-grid.component';
-import { FooterComponent } from './components/footer/footer.component';
 
 @Component({
   selector: 'app-root',
   imports: [
-    ReactiveFormsModule, 
+    ReactiveFormsModule,
     FormlyModule,
     HeaderComponent,
     TickerGridComponent,
-    FooterComponent
+    FooterComponent,
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App implements OnInit {
   private readonly binanceService = inject(BinanceService);
@@ -34,21 +33,23 @@ export class App implements OnInit {
   private readonly document = inject(DOCUMENT);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
-  
+
   readonly theme = signal<Theme>(
-    this.window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    this.window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
   );
   readonly form = new FormGroup({});
-  
+
   readonly model = signal<DashboardModel>({
-    selectedSymbols: this.binanceService.selectedSymbols()
+    selectedSymbols: this.binanceService.selectedSymbols(),
   });
 
   protected readonly availableOptions$ = toObservable(this.binanceService.availableSymbols).pipe(
-    map((symbols): SelectOption[] => symbols.map(s => ({ 
-      label: s.replace('USDT', ''), 
-      value: s 
-    })))
+    map((symbols): SelectOption[] =>
+      symbols.map((s) => ({
+        label: s.replace('USDT', ''),
+        value: s,
+      })),
+    ),
   );
 
   readonly fields: FormlyFieldConfig[] = [
@@ -75,18 +76,18 @@ export class App implements OnInit {
   }
 
   ngOnInit() {
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe((params) => {
       const symbolsParam = params['symbols'];
       let targetSymbols: string[] = [];
 
       if (symbolsParam) {
         targetSymbols = symbolsParam.split(',').filter((s: string) => s);
-      } 
+      }
 
       const current = this.model().selectedSymbols;
       // Simple equality check to avoid infinite loops if onModelChange writes back
       if (!this.areArraysEqual(current, targetSymbols)) {
-        this.model.update(m => ({ ...m, selectedSymbols: targetSymbols }));
+        this.model.update((m) => ({ ...m, selectedSymbols: targetSymbols }));
         this.binanceService.updateSelectedSymbols(targetSymbols);
       }
     });
@@ -100,30 +101,30 @@ export class App implements OnInit {
   }
 
   toggleTheme(): void {
-    this.theme.update(t => t === 'light' ? 'dark' : 'light');
+    this.theme.update((t) => (t === 'light' ? 'dark' : 'light'));
   }
 
   onModelChange(): void {
     // We update the signal to notify any observers (if any) and then sync with service
-    this.model.update(m => ({ ...m }));
+    this.model.update((m) => ({ ...m }));
     this.binanceService.updateSelectedSymbols(this.model().selectedSymbols);
-    
+
     // Sync to URL
     const symbols = this.model().selectedSymbols.join(',');
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { symbols: symbols || null },
       queryParamsHandling: 'merge',
-      replaceUrl: true
+      replaceUrl: true,
     });
   }
 
   handleSuggestion(symbol: string): void {
     const current = this.model().selectedSymbols;
     if (!current.includes(symbol)) {
-      this.model.update(m => ({
+      this.model.update((m) => ({
         ...m,
-        selectedSymbols: [...current, symbol]
+        selectedSymbols: [...current, symbol],
       }));
       this.onModelChange();
     }
@@ -132,7 +133,7 @@ export class App implements OnInit {
   handleRestoreDefaults(): void {
     this.binanceService.resetToDefaults();
     this.model.set({
-      selectedSymbols: [...this.binanceService.selectedSymbols()]
+      selectedSymbols: [...this.binanceService.selectedSymbols()],
     });
     this.onModelChange();
   }

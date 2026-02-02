@@ -1,7 +1,7 @@
 /* Global Material Design Overrides */
 
 /* Overlays (Select & Autocomplete Panels) */
-.mat-mdc-select-panel, 
+.mat-mdc-select-panel,
 .mat-mdc-autocomplete-panel {
   background-color: var(--bg-overlay) !important;
   border: var(--border-width) solid var(--border-strong) !important;

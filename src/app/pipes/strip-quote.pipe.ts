@@ -4,7 +4,7 @@ import { APP_CONFIG } from '../constants/app.constants';
 @Pipe({
   name: 'stripQuote',
 
-  pure: true
+  pure: true,
 })
 export class StripQuotePipe implements PipeTransform {
   transform(value: string | undefined): string {
