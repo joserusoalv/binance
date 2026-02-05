@@ -33,6 +33,42 @@ export class PortfolioService {
     return cost === 0 ? 0 : (this.totalPnL() / cost) * 100;
   });
 
+  readonly hasHoldings = computed(() => this.holdingsSignal().length > 0);
+
+  readonly bestPerformer = computed((): { symbol: string; pnlPercent: number } | null => {
+    const tickers = this.binanceService.tickers();
+    const holdings = this.holdingsSignal();
+    if (holdings.length === 0) return null;
+
+    let best: { symbol: string; pnlPercent: number } | null = null;
+    holdings.forEach((h) => {
+      const ticker = tickers.find((t) => t.symbol === h.symbol);
+      const currentPrice = ticker?.price || h.avgPrice;
+      const pnlPercent = ((currentPrice - h.avgPrice) / h.avgPrice) * 100;
+      if (!best || pnlPercent > best.pnlPercent) {
+        best = { symbol: h.symbol, pnlPercent };
+      }
+    });
+    return best;
+  });
+
+  readonly worstPerformer = computed((): { symbol: string; pnlPercent: number } | null => {
+    const tickers = this.binanceService.tickers();
+    const holdings = this.holdingsSignal();
+    if (holdings.length === 0) return null;
+
+    let worst: { symbol: string; pnlPercent: number } | null = null;
+    holdings.forEach((h) => {
+      const ticker = tickers.find((t) => t.symbol === h.symbol);
+      const currentPrice = ticker?.price || h.avgPrice;
+      const pnlPercent = ((currentPrice - h.avgPrice) / h.avgPrice) * 100;
+      if (!worst || pnlPercent < worst.pnlPercent) {
+        worst = { symbol: h.symbol, pnlPercent };
+      }
+    });
+    return worst;
+  });
+
   constructor() {
     this.loadHoldings();
   }

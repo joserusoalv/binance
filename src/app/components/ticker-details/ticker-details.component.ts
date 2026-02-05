@@ -252,20 +252,47 @@ import { calculateSMA } from '../../utils/indicators.utils';
                   }
 
                   <div class="portfolio-form">
-                    <div class="input-group">
-                      <input type="number" [(ngModel)]="portAmount" placeholder="Amount..." />
-                      <input type="number" [(ngModel)]="portPrice" placeholder="Buy Price..." />
+                    <div class="form-field">
+                      <label>💵 Cantidad Invertida (USD)</label>
+                      <input
+                        type="number"
+                        [(ngModel)]="portInvestment"
+                        placeholder="Ej: 1500"
+                        min="0"
+                        step="0.01"
+                      />
+                      <small class="field-hint">¿Cuántos dólares invertiste?</small>
                     </div>
+                    <div class="form-field">
+                      <label>📈 Precio de Entrada (USD)</label>
+                      <input
+                        type="number"
+                        [(ngModel)]="portPrice"
+                        placeholder="Ej: 70000"
+                        min="0"
+                        step="0.01"
+                      />
+                      <small class="field-hint">¿A qué precio compraste?</small>
+                    </div>
+                    @if (portInvestment > 0 && portPrice > 0) {
+                      <div class="calculated-amount">
+                        <span class="calc-label">Cantidad calculada:</span>
+                        <span class="calc-value"
+                          >{{ portInvestment / portPrice | number: '1.2-8' }}
+                          {{ data.symbol.replace('USDT', '') }}</span
+                        >
+                      </div>
+                    }
                     <div class="button-group">
                       <button (click)="updateHolding()" class="update-holding-btn">
-                        Set Position
+                        Guardar Posición
                       </button>
                       @if (holding()) {
                         <button
                           (click)="portfolioService.removePosition(data.symbol)"
                           class="remove-holding-btn"
                         >
-                          Reset
+                          Eliminar
                         </button>
                       }
                     </div>
@@ -313,8 +340,8 @@ export class TickerDetailsComponent implements OnInit, OnDestroy {
   );
 
   // Portfolio State
-  portAmount = 0;
-  portPrice = 0;
+  portInvestment = 0; // USD amount invested
+  portPrice = 0; // Entry price
   holding = this.portfolioService.getHolding(this.data.symbol);
 
   symbolPnL = computed(() => {
@@ -487,8 +514,13 @@ export class TickerDetailsComponent implements OnInit, OnDestroy {
   }
 
   updateHolding() {
-    if (this.portAmount < 0 || this.portPrice <= 0) return;
-    this.portfolioService.setAbsolutePosition(this.data.symbol, this.portAmount, this.portPrice);
+    if (this.portInvestment <= 0 || this.portPrice <= 0) return;
+    // Calculate crypto amount from USD investment
+    const cryptoAmount = this.portInvestment / this.portPrice;
+    this.portfolioService.setAbsolutePosition(this.data.symbol, cryptoAmount, this.portPrice);
+    // Reset form
+    this.portInvestment = 0;
+    this.portPrice = 0;
   }
 
   removeAlert(id: string) {

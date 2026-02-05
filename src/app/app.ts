@@ -13,6 +13,7 @@ import { WINDOW } from './tokens/window.token';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
+import { PortfolioSummaryComponent } from './components/portfolio-summary/portfolio-summary.component';
 import { TickerDetailsComponent } from './components/ticker-details/ticker-details.component';
 import { TickerGridComponent } from './components/ticker-grid/ticker-grid.component';
 
@@ -22,6 +23,7 @@ import { TickerGridComponent } from './components/ticker-grid/ticker-grid.compon
     ReactiveFormsModule,
     FormlyModule,
     HeaderComponent,
+    PortfolioSummaryComponent,
     TickerGridComponent,
     FooterComponent,
     MatDialogModule,
