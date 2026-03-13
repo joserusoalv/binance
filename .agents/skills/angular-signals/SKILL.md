@@ -18,7 +18,6 @@ description: Best practices and patterns for Signal-based state management in An
 - **DO** use `update()` or `set()` to change values.
 - **DO NOT** use `mutate()` (deprecated).
 - **DO NOT** write to signals inside a `computed()` or template.
-- **DO** use the `pipe(toSignal)` pattern for Observables that need to be read in templates.
 
 ## State Management Patterns
 

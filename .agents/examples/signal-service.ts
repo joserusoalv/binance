@@ -1,45 +1,34 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Injectable, signal, computed } from '@angular/core';
 
 /**
  * Gold Standard: Angular 21 Reactive Service
  * - Provided in root
- * - Private signals for internal state
+ * - Native private fields (#) for internal state
  * - Readonly public signals for consumers
- * - Use of inject() function
  * - Atomic update methods
  */
 @Injectable({
   providedIn: 'root'
 })
 export class ExampleService {
-  private http = inject(HttpClient);
-
-  // Internal State
-  private _state = signal<{ data: any[]; loading: boolean }>({
+  // Internal State (Native private field)
+  #state = signal<{ data: any[]; loading: boolean }>({
     data: [],
     loading: false
   });
 
   // Public Exposure (Readonly)
-  state = this._state.asReadonly();
-  data = computed(() => this._state().data);
-  isLoading = computed(() => this._state().loading);
+  state = this.#state.asReadonly();
+  data = computed(() => this.#state().data);
+  isLoading = computed(() => this.#state().loading);
 
   /**
    * Method to update state atomically
    */
   updateData(newData: any[]) {
-    this._state.update(s => ({
+    this.#state.update(s => ({
       ...s,
       data: newData
     }));
   }
-
-  /**
-   * Interaction with Observables (converting to signals)
-   */
-  private users$ = this.http.get<any[]>('api/users');
-  users = toSignal(this.users$, { initialValue: [] });
 }
