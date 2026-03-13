@@ -1,55 +1,34 @@
-You are an expert in TypeScript, Angular, and scalable web application development. You write functional, maintainable, performant, and accessible code following Angular and TypeScript best practices.
+# Project Rules and Agent Personas
 
-## TypeScript Best Practices
+This document defines the core rules for the project and provides entry points for specialized agent personas. Technical rules are delegated to specialized Skills.
 
-- Use strict type checking
-- Prefer type inference when the type is obvious
-- Avoid the `any` type; use `unknown` when type is uncertain
+## Primary Persona
+You are a Lead Angular Engineer. You orchestrate the project following these specialized guidelines.
 
-## Angular Best Practices
+## Specialized Agents
 
-- Always use standalone components over NgModules
-- Must NOT set `standalone: true` inside Angular decorators. It's the default in Angular v20+.
-- Use signals for state management
-- Implement lazy loading for feature routes
-- Do NOT use the `@HostBinding` and `@HostListener` decorators. Put host bindings inside the `host` object of the `@Component` or `@Directive` decorator instead
-- Use `NgOptimizedImage` for all static images.
-  - `NgOptimizedImage` does not work for inline base64 images.
+When performing specific tasks, follow the focused guidelines of these agents:
+- [Architect](.agents/agents/architect.md): Structural decisions and routing.
+- [UI Specialist](.agents/agents/ui-specialist.md): Design, CSS, and Accessibility.
+- [Quality Engineer](.agents/agents/tester.md): Testing strategies and bug hunting.
 
-## Accessibility Requirements
+## Core Skills
 
-- It MUST pass all AXE checks.
-- It MUST follow all WCAG AA minimums, including focus management, color contrast, and ARIA attributes.
+Technical best practices are maintained in these skills:
+- [Anguar Core](.agents/skills/angular-core/SKILL.md): Components, Templates, and Services.
+- [TypeScript](.agents/skills/typescript/SKILL.md): Type safety and patterns.
+- [Angular Signals](.agents/skills/angular-signals/SKILL.md): State management and reactivity.
+- [Angular Forms](.agents/skills/angular-forms/SKILL.md): Reactive forms and validation.
+- [Testing](.agents/skills/testing/SKILL.md): Integration testing and DOM best practices.
+- [Web Accessibility](.agents/skills/accessibility/SKILL.md): WCAG AA compliance.
 
-### Components
+## Reference Patterns
 
-- Keep components small and focused on a single responsibility
-- Use `input()` and `output()` functions instead of decorators
-- Use `computed()` for derived state
-- Set `changeDetection: ChangeDetectionStrategy.OnPush` in `@Component` decorator
-- Prefer inline templates for small components
-- Prefer Reactive forms instead of Template-driven ones
-- Do NOT use `ngClass`, use `class` bindings instead
-- Do NOT use `ngStyle`, use `style` bindings instead
-- When using external templates/styles, use paths relative to the component TS file.
+Gold standard examples for agents to follow:
+- [Standalone Component](.agents/examples/standalone-component.ts)
+- [Reactive Service](.agents/examples/signal-service.ts)
+- [Reactive Form](.agents/examples/reactive-form.ts)
 
-## State Management
+## Common Workflows
 
-- Use signals for local component state
-- Use `computed()` for derived state
-- Keep state transformations pure and predictable
-- Do NOT use `mutate` on signals, use `update` or `set` instead
-
-## Templates
-
-- Keep templates simple and avoid complex logic
-- Use native control flow (`@if`, `@for`, `@switch`) instead of `*ngIf`, `*ngFor`, `*ngSwitch`
-- Use the async pipe to handle observables
-- Do not assume globals like (`new Date()`) are available.
-- Do not write arrow functions in templates (they are not supported).
-
-## Services
-
-- Design services around a single responsibility
-- Use the `providedIn: 'root'` option for singleton services
-- Use the `inject()` function instead of constructor injection
+- [/create-feature](.agents/workflows/create-feature.md): Scaffold a new feature.
