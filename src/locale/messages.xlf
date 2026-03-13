@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en-US" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="187187500641108332" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ config.FOOTER_TEXT }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/footer/footer.component.ts</context>
+          <context context-type="linenumber">8,9</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/header/header.component.ts</context>
+          <context context-type="linenumber">19,20</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/ticker-grid/ticker-grid.component.ts</context>
+          <context context-type="linenumber">25,26</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/ticker-grid/ticker-grid.component.ts</context>
+          <context context-type="linenumber">150,151</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/ticker-grid/ticker-grid.component.ts</context>
+          <context context-type="linenumber">152,153</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/ticker-grid/ticker-grid.component.ts</context>
+          <context context-type="linenumber">162,163</context>
+        </context-group>
+        <note priority="1" from="description">Footer disclaimer</note>
+      </trans-unit>
+      <trans-unit id="8894377483833272091" datatype="html">
+        <source>Price</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/header/header.component.ts</context>
+          <context context-type="linenumber">39,41</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/ticker-grid/ticker-grid.component.ts</context>
+          <context context-type="linenumber">51,52</context>
+        </context-group>
+        <note priority="1" from="description">Market price label for BTC</note>
+      </trans-unit>
+      <trans-unit id="2098656431207184555" datatype="html">
+        <source>Coin</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/ticker-grid/ticker-grid.component.ts</context>
+          <context context-type="linenumber">43,44</context>
+        </context-group>
+        <note priority="1" from="description">Table header for Coin</note>
+      </trans-unit>
+      <trans-unit id="174110306189657183" datatype="html">
+        <source>24h Change</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/ticker-grid/ticker-grid.component.ts</context>
+          <context context-type="linenumber">59,60</context>
+        </context-group>
+        <note priority="1" from="description">Table header for 24h Change</note>
+      </trans-unit>
+      <trans-unit id="90974554169330832" datatype="html">
+        <source> Restore Defaults </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/ticker-grid/ticker-grid.component.ts</context>
+          <context context-type="linenumber">154,156</context>
+        </context-group>
+        <note priority="1" from="description">Restore defaults button</note>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

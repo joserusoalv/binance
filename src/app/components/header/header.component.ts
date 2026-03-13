@@ -6,15 +6,17 @@ import { FormlyFieldConfig, FormlyModule } from '@ngx-formly/core';
 import { APP_CONFIG } from '../../constants/app.constants';
 import { DashboardModel, Theme, TickerData } from '../../models/binance.models';
 
+import { LanguageSelectorComponent } from '../../shared/components/language-selector.component';
+
 @Component({
   selector: 'app-header',
-  imports: [ReactiveFormsModule, FormlyModule, DecimalPipe, MatIconModule],
+  imports: [ReactiveFormsModule, FormlyModule, DecimalPipe, MatIconModule, LanguageSelectorComponent],
   template: `
     <header class="header">
       <div class="header-left">
         <div class="logo">
           <span class="icon">{{ config.LOGO_ICON }}</span>
-          <h1>{{ config.TITLE }}</h1>
+          <h1 i18n="Dashboard title">{{ config.TITLE }}</h1>
         </div>
       </div>
 
@@ -34,7 +36,7 @@ import { DashboardModel, Theme, TickerData } from '../../models/binance.models';
         @if (btcTicker(); as btc) {
           <div class="market-overview">
             <div class="stat">
-              <span class="label">{{ btcLabel }}</span>
+              <span class="label" i18n="Market price label for BTC">Price</span>
               <span
                 class="value"
                 [class.up]="btc.direction === 'up'"
@@ -107,6 +109,8 @@ import { DashboardModel, Theme, TickerData } from '../../models/binance.models';
             </svg>
           }
         </button>
+
+        <app-language-selector></app-language-selector>
       </div>
     </header>
   `,

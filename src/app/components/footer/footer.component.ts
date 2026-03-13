@@ -5,7 +5,7 @@ import { APP_CONFIG } from '../../constants/app.constants';
   selector: 'app-footer',
   template: `
     <footer class="footer">
-      <p>{{ config.FOOTER_TEXT }}</p>
+      <p i18n="Footer disclaimer">{{ config.FOOTER_TEXT }}</p>
     </footer>
   `,
   styles: [

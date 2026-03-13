@@ -22,7 +22,7 @@ import { TickerCardComponent } from '../ticker-card/ticker-card.component';
       @if (isLoading()) {
         <div class="status-overlay">
           <div class="spinner"></div>
-          <p>{{ loadingMessage }}</p>
+          <p i18n="Loading message">{{ loadingMessage }}</p>
         </div>
       } @else if (sortedTickers().length > 0) {
         @if (viewMode() === 'grid') {
@@ -40,7 +40,7 @@ import { TickerCardComponent } from '../ticker-card/ticker-card.component';
               <thead>
                 <tr>
                   <th class="sortable text-left" (click)="toggleSort('symbol')">
-                    Coin
+                    <span i18n="Table header for Coin">Coin</span>
                     @if (sortColumn() === 'symbol') {
                       <mat-icon class="sort-icon">{{
                         sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward'
@@ -48,7 +48,7 @@ import { TickerCardComponent } from '../ticker-card/ticker-card.component';
                     }
                   </th>
                   <th class="sortable text-right" (click)="toggleSort('price')">
-                    Price
+                    <span i18n="Table header for Price">Price</span>
                     @if (sortColumn() === 'price') {
                       <mat-icon class="sort-icon">{{
                         sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward'
@@ -56,7 +56,7 @@ import { TickerCardComponent } from '../ticker-card/ticker-card.component';
                     }
                   </th>
                   <th class="sortable text-right" (click)="toggleSort('priceChangePercent')">
-                    24h Change
+                    <span i18n="Table header for 24h Change">24h Change</span>
                     @if (sortColumn() === 'priceChangePercent') {
                       <mat-icon class="sort-icon">{{
                         sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward'
@@ -147,10 +147,10 @@ import { TickerCardComponent } from '../ticker-card/ticker-card.component';
       } @else {
         <div class="status-overlay empty">
           <span class="empty-icon">{{ emptyIcon }}</span>
-          <p>{{ emptyMessage }}</p>
+          <p i18n="Empty state message">{{ emptyMessage }}</p>
           <div class="suggestions">
-            <span>{{ suggestionLabel }}</span>
-            <button class="suggestion-btn" (click)="restoreDefaults.emit()">
+            <span i18n="Suggestions label">{{ suggestionLabel }}</span>
+            <button class="suggestion-btn" (click)="restoreDefaults.emit()" i18n="Restore defaults button">
               Restore Defaults
             </button>
             @for (item of quickStartSymbols; track item) {
@@ -159,7 +159,7 @@ import { TickerCardComponent } from '../ticker-card/ticker-card.component';
               </button>
             }
           </div>
-          <small>{{ footerNote }}</small>
+          <small i18n="Footer note for search">{{ footerNote }}</small>
         </div>
       }
     </main>
