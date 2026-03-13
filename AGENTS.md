@@ -37,4 +37,4 @@ Gold standard examples for agents to follow:
 
 ## Common Workflows
 
-- [/create-feature](.agents/workflows/create-feature.md): Scaffold a new feature.
+- [/sdd-feature](.agents/workflows/sdd-feature.md): Scaffold a new feature using the SDD (Spec -> Plan -> Tasks) workflow.
