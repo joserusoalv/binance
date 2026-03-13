@@ -2,7 +2,7 @@ import { DOCUMENT } from '@angular/common';
 import { ChangeDetectionStrategy, Component, effect, inject, OnInit, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { FormlyFieldConfig, FormlyModule } from '@ngx-formly/core';
 import { map } from 'rxjs/operators';
 import { DashboardModel, SelectOption, Theme } from './models/binance.models';
@@ -27,6 +27,7 @@ import { TickerGridComponent } from './components/ticker-grid/ticker-grid.compon
     TickerGridComponent,
     FooterComponent,
     MatDialogModule,
+    RouterOutlet,
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',

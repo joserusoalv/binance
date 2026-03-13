@@ -32,3 +32,7 @@ Quedan:
 
 quiero meterle una seccion de noticias de twitter o de algun sitio. No se donde meterlas porque en la modal quiza es
 muy cargado la de binance tiene una pantalla por moneda. a ver que nos propone.
+
+Estilizar el mat menu de exportar
+
+El collapsable usa divs en vez de usar el componente de material.
