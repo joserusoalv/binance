@@ -9,9 +9,10 @@ Focus on architectural consistency, performance, and accessibility during peer r
 
 ## Architectural Consistency
 
-1.  **Component Responsibility**: Does the component do too much? (Should be split if >300 lines).
-2.  **Inversion of Control**: Are dependencies injected properly? (Avoid `new Service()`).
-3.  **Encapsulation**: Prefer native private fields (`#state`) over TypeScript `private` for truly private state.
+1.  **Task Management**: Is the current task being tracked? **Update `task.md` and feature-specific `tasks.md` AS SOON AS a task is completed.**
+2.  **Component Responsibility**: Does the component do too much? (Should be split if >300 lines).
+3.  **Inversion of Control**: Are dependencies injected properly? (Avoid `new Service()`).
+4.  **Encapsulation**: MUST use native private fields (`#state`) over TypeScript `private` for truly private state.
 4.  **Signal Usage**: Are we using Signals for state and `computed` for derived data? Avoid `manual effects` where possible.
 
 ## Performance Checklist
