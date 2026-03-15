@@ -1,14 +1,15 @@
-import { httpResource } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { z } from 'zod';
+# Blueprint: Resource Service (httpResource)
 
-/**
- * Gold Standard: Angular 21 Resource Service (httpResource)
- * - Uses httpResource for modern data fetching (v21 standard)
- * - Integrated Zod validation for runtime safety
- * - Reactive "refresh" capability
- */
+This blueprint demonstrates the gold standard for data fetching in Angular 21 using `httpResource`.
 
+## Key Features
+- Uses `httpResource` for modern data fetching (v21 standard)
+- Integrated Zod validation for runtime safety
+- Reactive "refresh" capability
+
+## Code Snippet
+
+```typescript
 // 1. Define Zod Schema for API response
 const UserSchema = z.object({
   id: z.number(),
@@ -43,3 +44,4 @@ export class UserResourceService {
     this.#usersResource.reload();
   }
 }
+```

@@ -43,3 +43,5 @@ const alert = await screen.findByRole('alert');
 -   Don't manually call `fixture.detectChanges()` unless absolutely necessary.
 -   Avoid CSS selectors (`.btn`, `#id`). Use semantic selectors instead.
 -   Don't test private methods or internal state variables.
+## References
+- [Integration Test Blueprint](./blueprints/integration-test.md)

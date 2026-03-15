@@ -1,15 +1,21 @@
-import { Component, ChangeDetectionStrategy, signal, computed, input, output } from '@angular/core';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+# Blueprint: Standalone Component
 
-/**
- * Gold Standard: Angular 21 Standalone Component
- * - No standalone: true (default in v21)
- * - Signal-based inputs and local state
- * - Computed values for derived state
- * - OnPush change detection
- * - Host object for bindings
- * - Native control flow (@if, @for)
- */
+Technical reference for a standard Angular 21 component.
+
+## Generation Command
+```bash
+ng generate component components/<name> --change-detection onPush
+```
+
+## Key Features
+- No redundant `standalone: true` (v21 default)
+- Signal-based inputs and local state
+- `OnPush` change detection (CLI flag)
+- Native control flow (`@if`, `@for`)
+
+## Code Snippet
+
+```typescript
 @Component({
   selector: 'app-example-component',
   imports: [CommonModule, NgOptimizedImage],
@@ -30,7 +36,6 @@ import { CommonModule, NgOptimizedImage } from '@angular/common';
       }
     </div>
   `,
-  styleUrls: ['./example-component.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[attr.aria-label]': 'title()',
@@ -57,3 +62,4 @@ export class ExampleComponent {
     this.countChanged.emit(this.count());
   }
 }
+```

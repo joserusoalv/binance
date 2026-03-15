@@ -93,4 +93,4 @@ Call the field or form as a function to access its state signals:
 - [ ] No manual `(submit)` event listeners are used if `submission` options are provided.
 
 ## References
-- [Signal Form Example](../../examples/signal-form.ts)
+- [Signal Form Blueprint](./blueprints/signal-form.md)

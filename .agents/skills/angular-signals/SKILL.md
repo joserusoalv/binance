@@ -28,4 +28,4 @@ description: Best practices and patterns for Signal-based state management in An
 - **Effect Usage**: Use `effect()` only for side effects like logging or external DOM APIs, never for state propagation.
 
 ## References
-- [Reactive Service Pattern](../../examples/signal-service.ts)
+- [Reactive Service Blueprint](./blueprints/signal-service.md)

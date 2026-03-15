@@ -1,22 +1,19 @@
-import { render, screen, fireEvent } from '@testing-library/angular';
-import { Component, inject } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { of, throwError } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
-import { vi, describe, it, expect } from 'vitest';
+# Blueprint: Integration Test (Testing Library)
 
-/**
- * Gold Standard: Angular Integration Test (Testing Library)
- * - Uses DOM-centric testing via `render` and `screen`
- * - Semantic selectors & data-testid
- * - Mocks HTTP service
- * - Verifies behavior, not implementation
- */
+This blueprint demonstrates the gold standard for an Angular Integration Test using Testing Library.
 
+## Key Features
+- Uses DOM-centric testing via `render` and `screen`
+- Semantic selectors & `data-testid`
+- Mocks HTTP service
+- Minimal UI logic in the test component
+
+## Code Snippet
+
+```typescript
 @Component({
   selector: 'app-user-form',
-  standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, CommonModule],
   template: `
     <form [formGroup]="userForm" (ngSubmit)="submit()">
       <label for="username">Username</label>
@@ -27,9 +24,7 @@ import { vi, describe, it, expect } from 'vitest';
       @if (loading) {
         <span data-testid="loading">Saving...</span>
       }
-      @if (error) {
-        <p role="alert">{{ error }}</p>
-      }
+      <app-error-display [error]="error" />
     </form>
   `,
 })
@@ -73,35 +68,12 @@ describe('UserFormComponent Integration', () => {
     const input = screen.getByLabelText(/username/i);
     const submitBtn = screen.getByRole('button', { name: /submit/i });
 
-    // 1. Act: Type and Submit
     fireEvent.input(input, { target: { value: 'testuser' } });
     fireEvent.click(submitBtn);
 
-    // 2. Assert: Loading appears
     expect(screen.getByTestId('loading')).toBeTruthy();
-
-    // 3. Assert: Loading disappears (async)
-    // Testing Library handles detection of changes automatically
     expect(screen.queryByTestId('loading')).toBeFalsy();
     expect(mockHttp.post).toHaveBeenCalledWith('/api/user', { username: 'testuser' });
   });
-
-  it('should show error message when API fails', async () => {
-    mockHttp.post.mockReturnValue(throwError(() => new Error('Server Error')));
-
-    await render(UserFormComponent, {
-      imports: [ReactiveFormsModule],
-      providers: [{ provide: HttpClient, useValue: mockHttp }],
-    });
-
-    const input = screen.getByLabelText(/username/i);
-    const submitBtn = screen.getByRole('button', { name: /submit/i });
-
-    fireEvent.input(input, { target: { value: 'testuser' } });
-    fireEvent.click(submitBtn);
-
-    // Assert: Error message with role="alert" appears asynchronously
-    const errorMsg = await screen.findByRole('alert');
-    expect(errorMsg.textContent).toContain('Failed to save');
-  });
 });
+```

@@ -1,12 +1,16 @@
-import { Injectable, signal, computed } from '@angular/core';
+# Blueprint: Reactive Service
 
-/**
- * Gold Standard: Angular 21 Reactive Service
- * - Provided in root
- * - Native private fields (#) for internal state
- * - Readonly public signals for consumers
- * - Atomic update methods
- */
+This blueprint demonstrates the gold standard for a Reactive Service in Angular 21.
+
+## Key Features
+- Provided in root
+- Native private fields (`#`) for internal state
+- Readonly public signals for consumers
+- Atomic update methods
+
+## Code Snippet
+
+```typescript
 @Injectable({
   providedIn: 'root'
 })
@@ -32,3 +36,4 @@ export class ExampleService {
     }));
   }
 }
+```

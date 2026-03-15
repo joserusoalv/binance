@@ -32,4 +32,4 @@ description: Best practices for Reactive Forms, validation, and CVA in Angular 2
 - [ ] Subscriptions to `valueChanges` or `statusChanges` are properly cleaned up.
 
 ## References
-- [Complete Reactive Form Example](../../examples/reactive-form.ts)
+- [Reactive Form Blueprint](./blueprints/reactive-form.md)
