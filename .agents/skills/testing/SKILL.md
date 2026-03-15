@@ -25,6 +25,29 @@ Use the `screen` object for queries. Preference order:
 4.  **getByText**: `screen.getByText(/success/i)`
 5.  **getByTestId**: `screen.getByTestId('loading-spinner')`
 
+## Component Inputs
+
+Handle inputs in tests using the `componentInputs` option in `render`:
+
+```typescript
+await render(ProfileComponent, {
+  componentInputs: { username: 'testuser', isAdmin: true }
+});
+```
+
+### Updating Inputs Dynamically
+To test changes when inputs update, use the `setInput` method from the `componentRef`:
+
+```typescript
+const { fixture } = await render(ProfileComponent, {
+  componentInputs: { status: 'offline' }
+});
+
+// Update input
+fixture.componentRef.setInput('status', 'online');
+fixture.detectChanges(); // Sometimes needed for reactive side effects
+```
+
 ## Asynchronous Handling
 
 Use `findBy` queries for elements that appear asynchronously:

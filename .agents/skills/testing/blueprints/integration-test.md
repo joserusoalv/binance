@@ -1,79 +1,50 @@
 # Blueprint: Integration Test (Testing Library)
 
-This blueprint demonstrates the gold standard for an Angular Integration Test using Testing Library.
+Technical reference for Angular Integration Testing.
 
 ## Key Features
-- Uses DOM-centric testing via `render` and `screen`
-- Semantic selectors & `data-testid`
-- Mocks HTTP service
-- Minimal UI logic in the test component
+- DOM-centric testing via `screen`.
+- **Component Inputs**: Passed via `componentInputs` in `render`.
+- **Dynamic Updates**: Using `fixture.componentRef.setInput()`.
+- Mocks and Providers.
 
 ## Code Snippet
 
 ```typescript
-@Component({
-  selector: 'app-user-form',
-  imports: [ReactiveFormsModule, CommonModule],
-  template: `
-    <form [formGroup]="userForm" (ngSubmit)="submit()">
-      <label for="username">Username</label>
-      <input id="username" formControlName="username" />
-
-      <button type="submit">Submit</button>
-
-      @if (loading) {
-        <span data-testid="loading">Saving...</span>
+describe('UserCardComponent', () => {
+  it('should render initial inputs and update dynamically', async () => {
+    // 1. Render with initial inputs
+    const { fixture } = await render(UserCardComponent, {
+      componentInputs: { 
+        name: 'John Doe',
+        role: 'Admin'
       }
-      <app-error-display [error]="error" />
-    </form>
-  `,
-})
-class UserFormComponent {
-  private fb = inject(FormBuilder);
-  private http = inject(HttpClient);
+    });
 
-  loading = false;
-  error = '';
-  userForm = this.fb.group({
-    username: ['', Validators.required],
+    expect(screen.getByText('John Doe')).toBeTruthy();
+    expect(screen.getByText('Role: Admin')).toBeTruthy();
+
+    // 2. Update inputs dynamically
+    fixture.componentRef.setInput('name', 'Jane Smith');
+    
+    // Testing Library and Angular Signals handle the update
+    expect(screen.getByText('Jane Smith')).toBeTruthy();
   });
 
-  submit() {
-    if (this.userForm.invalid) return;
+  it('should handle async API calls with mocks', async () => {
+    const mockService = {
+      getData: vi.fn().mockReturnValue(of({ value: 'Success' }))
+    };
 
-    this.loading = true;
-    this.http.post('/api/user', this.userForm.value).subscribe({
-      next: () => (this.loading = false),
-      error: () => {
-        this.loading = false;
-        this.error = 'Failed to save';
-      },
-    });
-  }
-}
-
-describe('UserFormComponent Integration', () => {
-  const mockHttp = {
-    post: vi.fn(),
-  };
-
-  it('should show loading state and hide it on success', async () => {
-    mockHttp.post.mockReturnValue(of({}));
-
-    await render(UserFormComponent, {
-      imports: [ReactiveFormsModule],
-      providers: [{ provide: HttpClient, useValue: mockHttp }],
+    await render(DataComponent, {
+      providers: [{ provide: DataService, useValue: mockService }]
     });
 
-    const input = screen.getByLabelText(/username/i);
-    const submitBtn = screen.getByRole('button', { name: /submit/i });
+    const button = screen.getByRole('button', { name: /fetch/i });
+    fireEvent.click(button);
 
-    fireEvent.input(input, { target: { value: 'testuser' } });
-    fireEvent.click(submitBtn);
-
-    expect(screen.getByTestId('loading')).toBeTruthy();
-    expect(screen.queryByTestId('loading')).toBeFalsy();
-    expect(mockHttp.post).toHaveBeenCalledWith('/api/user', { username: 'testuser' });
+    const result = await screen.findByText('Success');
+    expect(result).toBeTruthy();
   });
 });
 ```
