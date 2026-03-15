@@ -29,4 +29,25 @@ host: {
   '[attr.aria-selected]': 'isSelected()',
   '[class.is-active]': 'isActive()'
 }
+## Dynamic Updates & Live Regions
+
+- **LiveAnnouncer**: Use the `LiveAnnouncer` service from `@angular/cdk/a11y` to notify screen readers of important asynchronous changes (e.g., "Data loaded", "Selection updated").
+- **Live Regions**: For content that updates frequently but doesn't require immediate focus (like a live search results count), use `aria-live="polite"` or `aria-live="assertive"` on the container.
+- **Dependent Dropdowns**: When one dropdown updates another, announce the availability of new options: `"Options for [category] have been updated"`.
+- **Table Updates**: When filtering or sorting a table, announce the result: `"Table filtered. Showing 15 results"`.
+
+### Example: LiveAnnouncer
+
+```typescript
+export class UserGridComponent {
+  private announcer = inject(LiveAnnouncer);
+
+  onFilterChange(count: number) {
+    this.announcer.announce(`Filtered list. ${count} users found`, 'polite');
+  }
+}
 ```
+
+## References
+
+- [Live Announcer Blueprint](./blueprints/live-announcer.md)

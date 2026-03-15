@@ -26,17 +26,6 @@ Technical best practices are maintained in these skills:
 - [Enterprise Architecture](.agents/skills/enterprise-architecture/SKILL.md): Scalable patterns and DDD.
 - [Web Accessibility](.agents/skills/accessibility/SKILL.md): WCAG AA compliance.
 
-## Reference Blueprints
-
-Gold standard blueprints for agents to follow:
-- [Standalone Component](.agents/skills/angular-core/blueprints/standalone-component.md)
-- [Reactive Service](.agents/skills/angular-signals/blueprints/signal-service.md)
-- [Reactive Form](.agents/skills/angular-forms/blueprints/reactive-form.md)
-- [Resource Service](.agents/skills/angular-core/blueprints/resource-service.md)
-- [Smart Component](.agents/skills/angular-core/blueprints/smart-component.md)
-- [Integration Test](.agents/skills/testing/blueprints/integration-test.md)
-- [Signal Form](.agents/skills/angular-signal-forms/blueprints/signal-form.md)
-
 ## Common Workflows
 
 - [/sdd-feature](.agents/workflows/sdd-feature.md): Scaffold a new feature using the SDD (Spec -> Plan -> Tasks) workflow.
