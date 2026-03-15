@@ -19,6 +19,7 @@ Technical best practices are maintained in these skills:
 - [TypeScript](.agents/skills/typescript/SKILL.md): Type safety and patterns.
 - [Angular Signals](.agents/skills/angular-signals/SKILL.md): State management and reactivity.
 - [Angular Forms](.agents/skills/angular-forms/SKILL.md): Reactive forms and validation.
+- [Angular Signal Forms](.agents/skills/angular-signal-forms/SKILL.md): Experimental signal-based forms.
 - [Integration Testing](.agents/skills/testing/SKILL.md): Integration testing and DOM best practices.
 - [Spec Driven Development (SDD)](.agents/skills/spec-driven-development/SKILL.md): Behavioral specifications and intentional programming.
 - [Code Review](.agents/skills/code-review/SKILL.md): Best practices for peer reviews and quality.
