@@ -3,9 +3,10 @@
 This blueprint demonstrates the gold standard for data fetching in Angular 21 using `httpResource`.
 
 ## Key Features
-- Uses `httpResource` for modern data fetching (v21 standard)
-- Integrated Zod validation for runtime safety
-- Reactive "refresh" capability
+- **Modern Fetching**: Uses `httpResource` (v21 standard).
+- **Reactive Parameters**: Automatically re-fetches when input signals change.
+- **Automatic Cancellation**: Pending requests are aborted via `AbortController` if the component is destroyed or parameters change.
+- **Runtime Safety**: Integrated Zod validation.
 
 ## Code Snippet
 
@@ -24,24 +25,46 @@ type User = z.infer<typeof UserSchema>;
 })
 export class UserResourceService {
   /**
-   * httpResource: The specialized way to handle HTTP data in Angular 21.
-   * It is shorter and more optimized than raw resource/rxResource for HTTP.
-   * Use the 'parse' option to transform/validate the data.
+   * [1] DECLARATIVE PATTERN (Primary Standard)
+   * Best for shared/singleton state. The service owns the state (#userId).
    */
-  #usersResource = httpResource<User[]>(() => ({ url: '/api/users' }), {
-    parse: (data: unknown) => (data as any[]).map((item) => UserSchema.parse(item)),
+  readonly #userId = signal<number | null>(null);
+
+  #userResource = httpResource<User>(() => {
+    const id = this.#userId();
+    return id ? { url: `/api/users/${id}` } : null;
+  }, {
+    parse: (data: unknown) => UserSchema.parse(data),
   });
 
-  // Expose specific signals for the view
-  users = this.#usersResource.value;
-  isLoading = this.#usersResource.isLoading;
-  error = this.#usersResource.error;
+  // Expose signals for the view
+  user = this.#userResource.value;
+  isLoading = this.#userResource.isLoading;
+  error = this.#userResource.error;
 
   /**
-   * Trigger a data refresh
+   * Setting the signal triggers a re-fetch and 
+   * cancels any pending previous request.
    */
+  selectUser(id: number) {
+    this.#userId.set(id);
+  }
+
+  /**
+   * [2] FACTORY PATTERN (Alternative for Route Inputs)
+   * Best for bridging component-local signals (like route inputs) to the service.
+   */
+  getBySignal(idSignal: Signal<number | null>) {
+    return httpResource<User>(() => {
+      const id = idSignal();
+      return id ? { url: `/api/users/${id}` } : null;
+    }, {
+      parse: (data: unknown) => UserSchema.parse(data),
+    });
+  }
+
   reload() {
-    this.#usersResource.reload();
+    this.#userResource.reload();
   }
 }
 ```

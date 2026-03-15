@@ -3,11 +3,13 @@
 Technical reference for a standard Angular 21 component.
 
 ## Generation Command
+
 ```bash
 ng generate component components/<name> --change-detection onPush
 ```
 
 ## Key Features
+
 - No redundant `standalone: true` (v21 default)
 - Signal-based inputs and local state
 - `OnPush` change detection (CLI flag)
@@ -25,10 +27,8 @@ ng generate component components/<name> --change-detection onPush
         <h1>{{ title() }}</h1>
         <p>Current count: {{ count() }}</p>
         <p>Double count: {{ doubleCount() }}</p>
-        
-        <button type="button" (click)="increment()">
-          Increment
-        </button>
+
+        <button type="button" (click)="increment()">Increment</button>
 
         @for (item of items(); track item.id) {
           <div class="item">{{ item.name }}</div>
@@ -39,13 +39,13 @@ ng generate component components/<name> --change-detection onPush
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[attr.aria-label]': 'title()',
-    '[class.is-visible]': 'isVisible()'
-  }
+    '[class.is-visible]': 'isVisible()',
+  },
 })
 export class ExampleComponent {
   // Inputs
   title = input.required<string>();
-  items = input<any[]>([]);
+  items = input<Items[]>([]);
 
   // Local State
   count = signal(0);
@@ -58,7 +58,7 @@ export class ExampleComponent {
   doubleCount = computed(() => this.count() * 2);
 
   increment() {
-    this.count.update(c => c + 1);
+    this.count.update((c) => c + 1);
     this.countChanged.emit(this.count());
   }
 }

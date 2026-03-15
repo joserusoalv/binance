@@ -12,41 +12,38 @@ This blueprint demonstrates the gold standard for a Smart Component following DD
 
 ```typescript
 @Component({
-  selector: 'app-user-list-feature',
+  selector: 'app-user-detail-feature',
   imports: [CommonModule],
   template: `
     <div class="feature-container">
-      <header>
-        <h1>System Users</h1>
-        <button (click)="userService.reload()" [disabled]="isLoading()">
-          Refresh Data
-        </button>
-      </header>
-
-      @if (isLoading()) {
-        <div class="skeleton-loader">Loading users...</div>
+      @if (userResource.isLoading()) {
+        <div class="skeleton">Loading user details...</div>
       }
 
-      @if (error()) {
-        <app-error-alert [error]="error()" />
+      @if (userResource.value(); as user) {
+        <article>
+          <h1>{{ user.name }}</h1>
+          <p>{{ user.email }}</p>
+        </article>
       }
 
-      <div class="user-grid">
-        @for (user of users(); track user.id) {
-          <app-user-card [user]="user" />
-        } @empty {
-          <p>No users found in the system.</p>
-        }
-      </div>
+      @if (userResource.error()) {
+        <p class="error">Error loading user.</p>
+      }
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class UserListFeatureComponent {
-  protected userService = inject(UserResourceService);
+export class UserDetailFeatureComponent {
+  // Route input (via withComponentInputBinding)
+  id = input.required<number>();
 
-  users = this.userService.users;
-  isLoading = this.userService.isLoading;
-  error = this.userService.error;
+  private userService = inject(UserResourceService);
+
+  /**
+   * Bridge Pattern: Pass the signal directly to the service factory.
+   * No effect(), no allowSignalWrites, 100% reactive.
+   */
+  userResource = this.userService.getBySignal(this.id);
 }
 ```

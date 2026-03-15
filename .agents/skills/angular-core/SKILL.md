@@ -34,6 +34,15 @@ description: Essential patterns for Standalone Components, Templates, and Servic
 - **Injection**: Use the `inject()` function.
 - **Reactive Forms**: Prefer Reactive forms over Template-driven ones.
 
+## Request Management
+
+- **Resource API**: Use `httpResource` or `rxResource` for data fetching. They handle **automatic cancellation** (via `AbortController`) when a component is destroyed or reactive parameters change.
+- **Patterns**:
+    - **Declarative (Preferred)**: Define as a class property reading from signals. Best for shared state/singletons.
+    - **Factory**: A function that returns a resource. If it takes a `Signal` as an argument, you **must** still pass a computation function to `httpResource` to maintain reactivity: `httpResource(() => ({ url: param() }))`.
+- **Reactivity Warning**: Never pass a static object to `httpResource` if you want it to react to signal changes (e.g., `{ url: mySignal() }` evaluated at call time). Always use a function `() => ({ url: mySignal() })`.
+- **Injection Context**: Resources must be created within an injection context (field initialization or constructor) or provided with an explicit `injector`.
+
 ## References
 
 - [Standalone Component Blueprint](./blueprints/standalone-component.md)
