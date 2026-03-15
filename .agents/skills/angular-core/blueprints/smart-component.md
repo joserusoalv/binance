@@ -3,6 +3,7 @@
 This blueprint demonstrates the gold standard for a Smart Component following DDD patterns.
 
 ## Key Features
+
 - Follows DDD pattern (Feature vs UI)
 - Orchestrates services and resource signals
 - Handles high-level side effects and UI coordination
@@ -13,37 +14,30 @@ This blueprint demonstrates the gold standard for a Smart Component following DD
 ```typescript
 @Component({
   selector: 'app-user-detail-feature',
-  imports: [CommonModule],
+  imports: [UserCardUiComponent, SkeletonComponent, ErrorComponent],
+  providers: [UserResourceService], // [GUARDRAIL] Scoped lifecycle
   template: `
-    <div class="feature-container">
-      @if (userResource.isLoading()) {
-        <div class="skeleton">Loading user details...</div>
-      }
-
-      @if (userResource.value(); as user) {
-        <article>
-          <h1>{{ user.name }}</h1>
-          <p>{{ user.email }}</p>
-        </article>
-      }
-
-      @if (userResource.error()) {
-        <p class="error">Error loading user.</p>
-      }
-    </div>
+    @if (user(); as u) {
+      <app-user-card-ui [user]="u" (delete)="onDelete(u.id)" />
+    } @else if (res.isLoading()) {
+      <app-skeleton />
+    } @else if (res.error()) {
+      <app-error [message]="'User not found'" />
+    }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserDetailFeatureComponent {
-  // Route input (via withComponentInputBinding)
   id = input.required<number>();
+  private service = inject(UserResourceService);
 
-  private userService = inject(UserResourceService);
+  // Bridge signal to scoped service
+  res = this.service.getResource(this.id);
+  user = this.res.value;
 
-  /**
-   * Bridge Pattern: Pass the signal directly to the service factory.
-   * No effect(), no allowSignalWrites, 100% reactive.
-   */
-  userResource = this.userService.getBySignal(this.id);
+  onDelete(userId: number) {
+    // Orchestrate high-level side effect
+    console.log('Orchestrating delete for:', userId);
+  }
 }
 ```

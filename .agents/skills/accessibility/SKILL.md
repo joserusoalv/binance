@@ -1,56 +1,63 @@
 ---
 name: Web Accessibility (a11y)
-description: Guidelines and checklists for WCAG 2.1 AA compliance in Angular.
+description: Strict WCAG 2.1 AA engineering standards using Angular CDK and Signal-based state.
 ---
 
 # Accessibility (a11y) Skill
 
 ## 1. Context (Input)
-Before starting a11y work, I must:
-- [ ] Run an automated a11y check (e.g., axe-core) if possible.
-- [ ] Identify all interactive elements in the current feature.
-- [ ] Check if the project has a global `LiveAnnouncer` or similar service.
+
+Before implementation, the developer must:
+
+- [ ] Identify all **non-standard interactive patterns** (tabs, carousels, trees) that require manual keyboard orchestration.
+- [ ] Map all **asynchronous feedback loops** (toasts, loading states, validation errors) that require screen reader announcements.
+- [ ] **v21 Check**: Ensure `provideAnimationsAsync()` is configured in `app.config.ts` to support CDK overlay focus management.
 
 ## 2. Contract (Output)
-When implementing features, I will deliver:
-- Semantic HTML tags (`<nav>`, `<main>`, `<button>`, `<a>`).
-- Proper ARIA attributes for dynamic states.
-- Managed focus states for modals and dropdowns.
-- Clear announcements for asynchronous updates.
+
+Every feature must deliver:
+
+- **Semantic Foundation**: Native HTML elements over ARIA roles wherever possible.
+- **Focus Management**: Explicit focus restoration and trapping in all overlays.
+- **Dynamic State Sync**: ARIA attributes bound directly to Signals for real-time consistency.
+- **Announced Transitions**: Use of `LiveAnnouncer` for any DOM change not triggered by direct user click.
 
 ## 3. Guardrails
-- **NEVER** use `div` or `span` for buttons or links.
-- **NEVER** use color alone to convey meaning (e.g., red text for error without an icon/text).
-- **NEVER** skip heading levels (e.g., going from `h1` to `h3`).
-- **ALWAYS** ensure a minimum contrast ratio of 4.5:1 for normal text.
-- **ALWAYS** provide an `aria-label` or `title` if a button has no visible text (e.g., icon-only buttons).
-- **ALWAYS** trap focus within modal dialogs using `cdk-focus-trap`.
+
+- **NEVER** use `(click)` on a `div`, `span`, or `li` without a corresponding `(keydown)` listener for `Enter` and `Space`.
+- **NEVER** use `placeholder` as a label.
+- **NEVER** use `autofocus`. Use the `cdkFocusInitial` directive.
+- **ALWAYS** use `inject(LiveAnnouncer)` to announce API success/error messages.
+- **ALWAYS** use `cdk-focus-trap` in modals, sidebars, and drawers.
+- **ALWAYS** update the document title via `Title` service on every route change.
+- **ALWAYS** ensure `[attr.aria-invalid]` is synced with form control status signals.
+- **STRICT v21**: Use `provideAnimationsAsync()` for production apps; do not use legacy `provideAnimations()`.
 
 ## 4. Gold Standard Patterns
-Refer to these blueprints:
-- [Live Announcer Blueprint](./blueprints/live-announcer.md)
 
-### Key Snippet: Accessible Host Bindings
+### Key Snippet: Accessible Signal-Based Component
+
 ```typescript
 @Component({
-  selector: 'app-custom-tab',
+  selector: 'app-accessible-tab',
+  template: `<ng-content />`,
   host: {
-    'role': 'tab',
-    '[attr.aria-selected]': 'isSelected()',
-    '[attr.aria-controls]': 'panelId()',
-    '[tabindex]': 'isSelected() ? 0 : -1'
-  }
+    role: 'tab',
+    '[attr.aria-selected]': 'selected()',
+    '[attr.aria-controls]': 'controlsId()',
+    '[tabindex]': 'selected() ? 0 : -1',
+    '(keydown.arrowLeft)': 'focusPrevious.emit()',
+    '(keydown.arrowRight)': 'focusNext.emit()',
+    '(keydown.enter)': 'select.emit()',
+    '(keydown.space)': 'select.emit()',
+  },
 })
-export class CustomTabComponent {
-  isSelected = input.required<boolean>();
-  panelId = input.required<string>();
+export class AccessibleTabComponent {
+  selected = input.required<boolean>();
+  controlsId = input.required<string>();
+
+  select = output<void>();
+  focusNext = output<void>();
+  focusPrevious = output<void>();
 }
 ```
-
-## 5. Verification (Checklist)
-- [ ] Interactive elements are reachable via `Tab`.
-- [ ] `Enter` and `Space` work for all buttons.
-- [ ] `aria-expanded` is used for collapsible content.
-- [ ] Focus returns to the trigger after closing a modal.
-- [ ] `LiveAnnouncer` is used for async success/error messages.
-- [ ] Images have descriptive `alt` text or `alt=""` if decorative.

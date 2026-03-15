@@ -1,38 +1,44 @@
 ---
 name: Angular Core
-description: Essential patterns for Standalone Components, Templates, and Services in Angular 21.
+description: Strict engineering standards for v21: Functional, Reactive, and Signal-based.
 ---
 
 # Angular Core Skill
 
 ## 1. Context (Input)
-Before starting any core Angular development, I must:
-- [ ] Verify the current Angular version (target is Angular 21).
-- [ ] Check if the component should be standalone (default is YES).
-- [ ] Identify if a `Signal` or `Observable` approach is more appropriate for the specific use case.
+
+- [ ] Target: Angular 21+.
+- [ ] Confirm State Architecture: Does this feature need a global service or local `component-level` signals?
+- [ ] UI Architecture: Identify if the component is **Presentational** (inputs/outputs only) or **Smart** (injects services).
 
 ## 2. Contract (Output)
-When implementing core components or services, I will deliver:
-- Standalone components by default.
-- Modern control flow (`@if`, `@for`, `@switch`).
-- Optimized images using `NgOptimizedImage`.
-- Resources (`httpResource`, `rxResource`) for data fetching where applicable.
+
+- Standalone architecture (implicit).
+- **Zod-validated** data if using `httpResource`.
+- Clean templates using `@` control flow.
+- 100% Signal-based API (`input`, `output`, `model`, `viewChild`).
 
 ## 3. Guardrails
-- **NEVER** add `standalone: true` manually (Angular 21 default).
-- **NEVER** use `ngIf`, `ngFor`, or `ngSwitch` directives; use `@` syntax.
-- **NEVER** use `@HostBinding` or `@HostListener`; use the `host` object in `@Component`.
+
+- **NEVER** write `standalone: true`. It is the default.
+- **NEVER** use `@Input`, `@Output`, `@ViewChild`, `@ContentChild`, `@HostBinding`, or `@HostListener`. No exceptions.
+- **NEVER** use `effect()` to synchronize state. Use `computed()` for read-only or `linkedSignal()` for writable dependent state.
+- **NEVER** use `constructor()` for Dependency Injection. Use `inject()` at the class field level.
 - **ALWAYS** use `ChangeDetectionStrategy.OnPush`.
 - **ALWAYS** use `inject()` for dependency injection instead of constructor injection.
 - **ALWAYS** use `input()` and `output()` functions instead of `@Input()` and `@Output()` decorators.
+- **ALWAYS** provide domain-specific services at the **Route** or **Component** level to ensure `httpResource` cleanup (avoid `providedIn: 'root'` for non-global data).
 
 ## 4. Gold Standard Patterns
+
 Refer to these blueprints for implementation:
+
 - [Standalone Component Blueprint](./blueprints/standalone-component.md)
 - [Resource Service Blueprint](./blueprints/resource-service.md)
 - [Smart Component Blueprint](./blueprints/smart-component.md)
 
 ### Key Snippet: Modern Component
+
 ```typescript
 @Component({
   selector: 'app-user-profile',
@@ -43,8 +49,8 @@ Refer to these blueprints for implementation:
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '[class.is-active]': 'isActive()'
-  }
+    '[class.is-active]': 'isActive()',
+  },
 })
 export class UserProfileComponent {
   user = input.required<User>();
@@ -53,9 +59,9 @@ export class UserProfileComponent {
 ```
 
 ## 5. Verification (Checklist)
-- [ ] Component is created via CLI with `--change-detection onPush`.
-- [ ] `standalone: true` is NOT present in the code.
-- [ ] `inject()` is used for all services.
-- [ ] `input()`/`output()` are used for communication.
-- [ ] Native control flow (`@if`, etc.) is used in templates.
-- [ ] `httpResource` is used correctly with a function for reactivity if needed.
+
+- [ ] No decorators (@Input, etc.) exist in the file.
+- [ ] standalone: true is absent.
+- [ ] All data fetching uses httpResource or rxResource.
+- [ ] No effect() is used for state mutation.
+- [ ] Control flow uses @if/@for.

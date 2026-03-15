@@ -19,47 +19,41 @@ ng generate component components/<name> --change-detection onPush
 
 ```typescript
 @Component({
-  selector: 'app-example-component',
-  imports: [CommonModule, NgOptimizedImage],
+  selector: 'app-ui-item',
+  imports: [NgOptimizedImage],
   template: `
-    <div class="container">
-      @if (isVisible()) {
-        <h1>{{ title() }}</h1>
-        <p>Current count: {{ count() }}</p>
-        <p>Double count: {{ doubleCount() }}</p>
+    @if (data(); as items) {
+      <header>
+        <h2>{{ label() }} ({{ count() }})</h2>
+        <button (click)="onAdd()">Add</button>
+      </header>
 
-        <button type="button" (click)="increment()">Increment</button>
-
-        @for (item of items(); track item.id) {
-          <div class="item">{{ item.name }}</div>
-        }
+      @for (item of items; track item.id) {
+        <div class="row">{{ item.name }}</div>
+      } @empty {
+        <p>No items found.</p>
       }
-    </div>
+    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {
-    '[attr.aria-label]': 'title()',
-    '[class.is-visible]': 'isVisible()',
-  },
+  host: { role: 'listitem', '[class.active]': 'isActive()' },
 })
-export class ExampleComponent {
-  // Inputs
-  title = input.required<string>();
-  items = input<Items[]>([]);
+export class UiItemComponent {
+  // Inputs & Outputs (Signal-based)
+  label = input.required<string>();
+  data = input<Item[]>([]);
+  add = output<void>();
 
-  // Local State
+  // State
   count = signal(0);
-  isVisible = signal(true);
+  isActive = signal(false);
 
-  // Outputs
-  countChanged = output<number>();
+  // Derived
+  hasData = computed(() => this.data().length > 0);
 
-  // Derived State
-  doubleCount = computed(() => this.count() * 2);
-
-  increment() {
-    this.count.update((c) => c + 1);
-    this.countChanged.emit(this.count());
+  onAdd() {
+    this.count.update((v) => v + 1);
+    this.add.emit();
   }
 }
 ```
