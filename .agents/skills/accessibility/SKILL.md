@@ -5,49 +5,52 @@ description: Guidelines and checklists for WCAG 2.1 AA compliance in Angular.
 
 # Accessibility (a11y) Skill
 
-## Global Requirements
-- It **MUST** pass all AXE checks.
-- It **MUST** follow all WCAG 2.1 AA minimums.
-- Focus management, color contrast (4.5:1), and ARIA attributes are non-negotiable.
+## 1. Context (Input)
+Before starting a11y work, I must:
+- [ ] Run an automated a11y check (e.g., axe-core) if possible.
+- [ ] Identify all interactive elements in the current feature.
+- [ ] Check if the project has a global `LiveAnnouncer` or similar service.
 
-## Checklist
+## 2. Contract (Output)
+When implementing features, I will deliver:
+- Semantic HTML tags (`<nav>`, `<main>`, `<button>`, `<a>`).
+- Proper ARIA attributes for dynamic states.
+- Managed focus states for modals and dropdowns.
+- Clear announcements for asynchronous updates.
 
-- [ ] **Focus Management**: Focus is returned to the trigger after a modal closes. Focus is trapped within dialogs.
-- [ ] **Semantic HTML**: Use `<button>` for actions and `<a>` for navigation.
-- [ ] **ARIA**: Use `aria-label` when text is not visible. Use `aria-expanded` and `aria-hidden` correctly.
-- [ ] **Contrast**: Minimum contrast ratio of 4.5:1 for normal text.
-- [ ] **Keyboard**: All interactive elements are reachable via `Tab`. Actions are performable via `Enter` or `Space`.
+## 3. Guardrails
+- **NEVER** use `div` or `span` for buttons or links.
+- **NEVER** use color alone to convey meaning (e.g., red text for error without an icon/text).
+- **NEVER** skip heading levels (e.g., going from `h1` to `h3`).
+- **ALWAYS** ensure a minimum contrast ratio of 4.5:1 for normal text.
+- **ALWAYS** provide an `aria-label` or `title` if a button has no visible text (e.g., icon-only buttons).
+- **ALWAYS** trap focus within modal dialogs using `cdk-focus-trap`.
 
-## Angular Specifics
+## 4. Gold Standard Patterns
+Refer to these blueprints:
+- [Live Announcer Blueprint](./blueprints/live-announcer.md)
 
-- Use `cdk-focus-trap` from Angular CDK for dialogs.
-- Ensure `title` is updated on navigation.
-- Bind `id` and `for` dynamically in forms for accessible inputs.
-- Host bindings in `@Component` for ARIA state:
+### Key Snippet: Accessible Host Bindings
 ```typescript
-host: {
-  '[attr.aria-selected]': 'isSelected()',
-  '[class.is-active]': 'isActive()'
-}
-## Dynamic Updates & Live Regions
-
-- **LiveAnnouncer**: Use the `LiveAnnouncer` service from `@angular/cdk/a11y` to notify screen readers of important asynchronous changes (e.g., "Data loaded", "Selection updated").
-- **Live Regions**: For content that updates frequently but doesn't require immediate focus (like a live search results count), use `aria-live="polite"` or `aria-live="assertive"` on the container.
-- **Dependent Dropdowns**: When one dropdown updates another, announce the availability of new options: `"Options for [category] have been updated"`.
-- **Table Updates**: When filtering or sorting a table, announce the result: `"Table filtered. Showing 15 results"`.
-
-### Example: LiveAnnouncer
-
-```typescript
-export class UserGridComponent {
-  private announcer = inject(LiveAnnouncer);
-
-  onFilterChange(count: number) {
-    this.announcer.announce(`Filtered list. ${count} users found`, 'polite');
+@Component({
+  selector: 'app-custom-tab',
+  host: {
+    'role': 'tab',
+    '[attr.aria-selected]': 'isSelected()',
+    '[attr.aria-controls]': 'panelId()',
+    '[tabindex]': 'isSelected() ? 0 : -1'
   }
+})
+export class CustomTabComponent {
+  isSelected = input.required<boolean>();
+  panelId = input.required<string>();
 }
 ```
 
-## References
-
-- [Live Announcer Blueprint](./blueprints/live-announcer.md)
+## 5. Verification (Checklist)
+- [ ] Interactive elements are reachable via `Tab`.
+- [ ] `Enter` and `Space` work for all buttons.
+- [ ] `aria-expanded` is used for collapsible content.
+- [ ] Focus returns to the trigger after closing a modal.
+- [ ] `LiveAnnouncer` is used for async success/error messages.
+- [ ] Images have descriptive `alt` text or `alt=""` if decorative.

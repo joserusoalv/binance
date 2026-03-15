@@ -3,68 +3,49 @@ name: Integration Testing
 description: Best practices for component integration testing using Testing Library for Angular.
 ---
 
-# Integration Testing Best Practices (Testing Library)
+# Integration Testing Skill
 
-Focus on testing component behavior through the DOM using `@testing-library/angular`. This approach ensures tests are resilient, accessible, and reflect real user experience.
+## 1. Context (Input)
+Before writing tests, I must:
+- [ ] Identify the core user behaviors to be tested (not internal logic).
+- [ ] Check if the component has inputs/outputs that need mocking.
+- [ ] Identify any asynchronous operations (API calls, timers) that require `findBy` or `wait`.
 
-## Core Philosophy
+## 2. Contract (Output)
+When writing tests, I will deliver:
+- Resilient, DOM-centric tests using `@testing-library/angular`.
+- Tests that interact with the UI via `screen` and `userEvent`.
+- Accessible selectors (`getByRole`, `getByLabelText`).
+- Proper handling of asynchronous elements and states.
 
-1.  **DOM-Centric**: Interact via user actions using `screen` and `fireEvent`.
-2.  **Semantic Queries**: Favor accessibility-based selectors over implementation details.
-3.  **Encapsulation**: Avoid accessing `componentInstance`. Test what is visible to the user.
-4.  **Resilience**: Tests shouldn't break when you refactor internal logic, only when behavior changes.
-5.  **Simplicity**: Testing Library manages change detection automatically for most interactions.
+## 3. Guardrails
+- **NEVER** test private methods or internal state variables.
+- **NEVER** use CSS selectors (`.btn`, `#id`); use semantic roles or labels.
+- **NEVER** manually call `fixture.detectChanges()` unless absolutely necessary for complex reactive side effects.
+- **ALWAYS** use `screen` for querying the DOM.
+- **ALWAYS** use `findBy` queries for elements that appear asynchronously.
+- **ALWAYS** mock external services (APIs) to ensure test isolation.
 
-## Querying the DOM
-
-Use the `screen` object for queries. Preference order:
-
-1.  **getByRole**: `screen.getByRole('button', { name: /submit/i })`
-2.  **getByLabelText**: `screen.getByLabelText(/username/i)`
-3.  **getByPlaceholderText**: `screen.getByPlaceholderText(/search/i)`
-4.  **getByText**: `screen.getByText(/success/i)`
-5.  **getByTestId**: `screen.getByTestId('loading-spinner')`
-
-## Component Inputs
-
-Handle inputs in tests using the `componentInputs` option in `render`:
-
-```typescript
-await render(ProfileComponent, {
-  componentInputs: { username: 'testuser', isAdmin: true }
-});
-```
-
-### Updating Inputs Dynamically
-To test changes when inputs update, use the `setInput` method from the `componentRef`:
-
-```typescript
-const { fixture } = await render(ProfileComponent, {
-  componentInputs: { status: 'offline' }
-});
-
-// Update input
-fixture.componentRef.setInput('status', 'online');
-fixture.detectChanges(); // Sometimes needed for reactive side effects
-```
-
-## Asynchronous Handling
-
-Use `findBy` queries for elements that appear asynchronously:
-```typescript
-const alert = await screen.findByRole('alert');
-```
-
-## Do's and Don'ts
-
-### ✅ Do
--   Use `render(Component, { ... })` to set up the test environment.
--   Use `fireEvent` to simulate user interactions (click, input, change).
--   Verify that error messages are visible and have correct ARIA roles.
-
-### ❌ Don't
--   Don't manually call `fixture.detectChanges()` unless absolutely necessary.
--   Avoid CSS selectors (`.btn`, `#id`). Use semantic selectors instead.
--   Don't test private methods or internal state variables.
-## References
+## 4. Gold Standard Patterns
+Refer to these blueprints:
 - [Integration Test Blueprint](./blueprints/integration-test.md)
+
+### Key Snippet: Query Priority
+```typescript
+// 1. Semantic (Preferred)
+screen.getByRole('button', { name: /save/i });
+screen.getByLabelText(/email/i);
+
+// 2. Visible Text
+screen.getByText(/data saved successfully/i);
+
+// 3. Test ID (Last Resort)
+screen.getByTestId('loading-spinner');
+```
+
+## 5. Verification (Checklist)
+- [ ] `render(Component)` is used for setup.
+- [ ] `fireEvent` or `userEvent` is used for interactions.
+- [ ] Assertions verify what the user sees/experiences.
+- [ ] Tests remain green after internal code refactoring.
+- [ ] Async elements are handled with `await screen.findBy...`.

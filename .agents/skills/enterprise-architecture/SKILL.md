@@ -3,60 +3,55 @@ name: Enterprise Architecture (DDD)
 description: Scalable, domain-driven architectural patterns for Angular applications.
 ---
 
-# Enterprise Architecture (DDD)
+# Enterprise Architecture (DDD) Skill
 
-Maintain a clean separation of concerns using a Domain-Driven Design (DDD) inspired structure. This ensures the application remains scalable as features grow.
+## 1. Context (Input)
+Before starting architectural work, I must:
+- [ ] Identify the specific domain for the new feature.
+- [ ] Check for existing data-access or shared services that could be leveraged.
+- [ ] Determine if the component is a "Smart" (Feature) or "Presentational" (UI) component.
 
-## Folder Structure (Domain-Based)
+## 2. Contract (Output)
+When implementing architecture, I will deliver:
+- A domain-based folder structure (`data-access`, `features`, `ui`, `utils`).
+- Smart components that handle routing and orchestration.
+- Pure presentational components using signal inputs/outputs.
+- Runtime data validation using Zod.
 
-Structure features by domain, not by technical type:
+## 3. Guardrails
+- **NEVER** trust backend types implicitly; use Zod validation at the boundary.
+- **NEVER** inject services directly into presentational (UI) components.
+- **NEVER** allow features to be loaded eagerly; **ALWAYS** use lazy loading for domain features.
+- **ALWAYS** separate concerns by domain, not by technical type.
+- **ALWAYS** use `asReadonly()` to expose signal state from services.
+- **ALWAYS** use immutable data patterns when updating state.
 
+## 4. Gold Standard Patterns
+
+### Folder Structure
 ```text
 src/app/domains/
-  ├── auth/
-  ├── portfolio/
+  ├── <domain>/
   │   ├── data-access/      # Services, Interfaces, State (Signals)
   │   ├── features/         # Smart Components (Routes)
   │   ├── ui/               # Presentational Components (Dumb)
   │   └── utils/            # Domain-specific helpers/pipes
-  └── shared/               # Global components (Buttons, Inputs)
 ```
 
-## Component Types
-
-### Smart Components (Features)
--   Connected to Services/Signals.
--   Handle routing and side effects.
--   Orchestrate UI/Presentational components.
-
-### Presentational Components (UI)
--   Receive data via `@Input` (Signals preferred: `input()`).
--   Emit events via `@Output` (Signals preferred: `output()`).
--   No direct service injection.
--   Purely visual and interactive.
-
-## Data Access Patterns
-
-1.  **Centralized State**: Use Services with private `signal` and public `asReadonly()` to expose state.
-2.  **Immutability**: Ensure signals hold immutable data (use partial updates or spread operators).
-3.  **Zod Validation**: Validate incoming API data in the Service layer before it reaches the View.
-
-## Runtime Data Validation (Zod)
-
-In Enterprise projects, never trust the backend types implicitly. Use Zod to validate data at the network boundary:
-
-1.  **Define Schemas**: Create schemas that mirror your domain interfaces.
-2.  **Parse at Source**: Use `Schema.parse(data)` inside your Service's `pipe(map())` or `rxResource` loader.
-3.  **Fail Early**: Catch mapping errors immediately rather than having `undefined` bugs in UI components.
-
+### Key Snippet: Zod Validation
 ```typescript
-const MySchema = z.object({ id: z.string() });
-// In service:
-this.http.get('/api').pipe(map(d => MySchema.parse(d)));
+const UserSchema = z.object({ id: z.string(), name: z.string() });
+
+// In data-access service:
+this.http.get('/api/user').pipe(
+  map(data => UserSchema.parse(data))
+);
 ```
 
-## Cross-Cutting Rules
-
-1.  **Lazy Loading**: Every domain feature should be lazy-loaded by default.
-2.  **Shared vs. Core**: Shared contains UI components; Core contains singleton services (Auth, Config).
-3.  **Strict Typing**: No `any` allowed. Use interfaces or types for every data structure.
+## 5. Verification (Checklist)
+- [ ] Folder structure follows the domain-based pattern.
+- [ ] Features are lazy-loaded in the routing configuration.
+- [ ] Presentational components have NO service injections.
+- [ ] Zod is used for data parsing in services.
+- [ ] State is managed via private signals and readonly exposures.
+- [ ] External libraries are abstracted or wrapped where appropriate.

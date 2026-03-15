@@ -5,45 +5,41 @@ description: Workflow for driving implementation through high-level specificatio
 
 # Spec Driven Development Skill
 
-SDD prioritize creating a "Spec" as the source of truth BEFORE implementation. This ensures alignment between requirements and execution while leveraging AI capabilities effectively.
+## 1. Context (Input)
+Before starting implementation via SDD, I must:
+- [ ] Verify that a `spec.md` exists or has been requested.
+- [ ] Identify any missing information in the requirements (unclear edge cases, UI details).
+- [ ] Ensure all relevant "Skills" and "Blueprints" are referenced in the implementation plan.
 
-## Core SDD Workflow
+## 2. Contract (Output)
+When following the SDD workflow, I will deliver:
+- A conceptual `spec.md` focused on the "What".
+- A technical `plan.md` (Implementation Plan) focused on the "How".
+- A roadmap of atomic tasks in `task.md` or `tasks.md`.
+- A verified implementation that matches the spec exactly.
 
-1.  **Specify (`spec.md`)**: Define the *Conceptual What*.
-    - Describe features from the user's perspective.
-    - Avoid technical implementation details (no frameworks, no library names).
-    - define the "Contract" of what the feature should achieve.
+## 3. Guardrails
+- **NEVER** implement from a vague prompt; **ALWAYS** insist on a `spec.md` or `Implementation Plan`.
+- **NEVER** include technical library names or framework-specific code in the `spec.md`.
+- **NEVER** skip the clarification phase if the spec has ambiguities.
+- **ALWAYS** update `task.md` as soon as a task is completed.
+- **ALWAYS** perform a code review or audit after task generation.
 
-2.  **Clarify**: (Agent Interaction)
-    - Identify ambiguities in the `spec.md`.
-    - Ask questions about edge cases, error handling, and non-visual behaviors.
+## 4. Gold Standard Patterns
 
-3.  **Plan (`plan.md`)**: Define the *Technical How*.
-    - Choose technology (Angular, Signals, Zod, etc.).
-    - Define architecture (Domain layer, Service layer, UI components).
-    - Map spec requirements to technical entities.
-
-4.  **Taskify (`tasks.md`)**: Create a *Roadmap*.
-    - Break down the plan into atomic, sequential tasks.
-    - Each task should be descriptive enough for an agent to execute autonomously.
-
-5.  **Implement**: Execute the roadmap.
-    - The agent follows the tasks step-by-step.
-    - Continuous verification at each step.
-
-## Best Practices
-
-- **Spec over Vibe**: Never implement from a vague prompt. Always insist on a `spec.md` or `Implementation Plan`.
-- **Constitutions**: Use a `CONSTITUTION.md` or global rules to define non-negotiable patterns (e.g., "Always use OnPush", "Always use Signals").
-- **Audit**: Run an "Analysis" or "Code Review" after task generation to find inconsistencies before writing a single line of code.
-
-## File Structure Pattern
-
+### SDD Directory Structure
 ```text
 .agents/
   specs/
-    001-feature-name/
-      spec.md     <-- Conceptual
-      plan.md     <-- Technical
-      tasks.md    <-- Roadmap
+    <feature-name>/
+      spec.md     # Conceptual What
+      plan.md     # Technical How
+      tasks.md    # Atomic Roadmap
 ```
+
+## 5. Verification (Checklist)
+- [ ] `spec.md` defines behaviors from the user's perspective.
+- [ ] `plan.md` maps requirements to technical entities (components, services).
+- [ ] Tasks are atomic and sequential.
+- [ ] Implementation is verified against the roadmap.
+- [ ] Walkthrough is created at the end to demonstrate results.

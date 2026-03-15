@@ -3,48 +3,59 @@ name: Angular Core
 description: Essential patterns for Standalone Components, Templates, and Services in Angular 21.
 ---
 
-# Angular Core Best Practices
+# Angular Core Skill
 
-## Component Generation
+## 1. Context (Input)
+Before starting any core Angular development, I must:
+- [ ] Verify the current Angular version (target is Angular 21).
+- [ ] Check if the component should be standalone (default is YES).
+- [ ] Identify if a `Signal` or `Observable` approach is more appropriate for the specific use case.
 
-- **CLI First**: Always create components using the Angular CLI to ensure project standards are applied:
-  ```bash
-  ng generate component <name> --change-detection onPush
-  ```
-- **Defaults**: Angular 21 defaults to standalone components. Do **NOT** manually add `standalone: true`.
+## 2. Contract (Output)
+When implementing core components or services, I will deliver:
+- Standalone components by default.
+- Modern control flow (`@if`, `@for`, `@switch`).
+- Optimized images using `NgOptimizedImage`.
+- Resources (`httpResource`, `rxResource`) for data fetching where applicable.
 
-## Component Standards
+## 3. Guardrails
+- **NEVER** add `standalone: true` manually (Angular 21 default).
+- **NEVER** use `ngIf`, `ngFor`, or `ngSwitch` directives; use `@` syntax.
+- **NEVER** use `@HostBinding` or `@HostListener`; use the `host` object in `@Component`.
+- **ALWAYS** use `ChangeDetectionStrategy.OnPush`.
+- **ALWAYS** use `inject()` for dependency injection instead of constructor injection.
+- **ALWAYS** use `input()` and `output()` functions instead of `@Input()` and `@Output()` decorators.
 
-- **Responsibility**: Keep components small and focused.
-- **OnPush**: Always use `ChangeDetectionStrategy.OnPush` (enforced by CLI flag above).
-- **Inputs/Outputs**: Use `input()` and `output()` functions instead of decorators.
-- **Host Bindings**: Use the `host` object in `@Component` instead of `@HostBinding`/`@HostListener`.
-- **Images**: Use `NgOptimizedImage` for all static images.
-
-## Templates
-
-- **Control Flow**: Use native `@if`, `@for`, `@switch`.
-- **Simple Logic**: Avoid complex expressions in templates.
-- **Class/Style**: Use `class` and `style` bindings instead of `ngClass`/`ngStyle`.
-- **Async**: Use the `async` pipe for Observables.
-
-## Services
-
-- **Root Provision**: Use `providedIn: 'root'`.
-- **Injection**: Use the `inject()` function.
-- **Reactive Forms**: Prefer Reactive forms over Template-driven ones.
-
-## Request Management
-
-- **Resource API**: Use `httpResource` or `rxResource` for data fetching. They handle **automatic cancellation** (via `AbortController`) when a component is destroyed or reactive parameters change.
-- **Patterns**:
-    - **Declarative (Preferred)**: Define as a class property reading from signals. Best for shared state/singletons.
-    - **Factory**: A function that returns a resource. If it takes a `Signal` as an argument, you **must** still pass a computation function to `httpResource` to maintain reactivity: `httpResource(() => ({ url: param() }))`.
-- **Reactivity Warning**: Never pass a static object to `httpResource` if you want it to react to signal changes (e.g., `{ url: mySignal() }` evaluated at call time). Always use a function `() => ({ url: mySignal() })`.
-- **Injection Context**: Resources must be created within an injection context (field initialization or constructor) or provided with an explicit `injector`.
-
-## References
-
+## 4. Gold Standard Patterns
+Refer to these blueprints for implementation:
 - [Standalone Component Blueprint](./blueprints/standalone-component.md)
 - [Resource Service Blueprint](./blueprints/resource-service.md)
 - [Smart Component Blueprint](./blueprints/smart-component.md)
+
+### Key Snippet: Modern Component
+```typescript
+@Component({
+  selector: 'app-user-profile',
+  template: `
+    @if (user(); as u) {
+      <h1>{{ u.name }}</h1>
+    }
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '[class.is-active]': 'isActive()'
+  }
+})
+export class UserProfileComponent {
+  user = input.required<User>();
+  isActive = signal(false);
+}
+```
+
+## 5. Verification (Checklist)
+- [ ] Component is created via CLI with `--change-detection onPush`.
+- [ ] `standalone: true` is NOT present in the code.
+- [ ] `inject()` is used for all services.
+- [ ] `input()`/`output()` are used for communication.
+- [ ] Native control flow (`@if`, etc.) is used in templates.
+- [ ] `httpResource` is used correctly with a function for reactivity if needed.

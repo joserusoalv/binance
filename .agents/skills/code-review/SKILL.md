@@ -3,38 +3,46 @@ name: Code Review Specialist
 description: Checklist and best practices for high-quality enterprise code reviews.
 ---
 
-# Code Review Specialist
+# Code Review Skill
 
-Focus on architectural consistency, performance, and accessibility during peer reviews.
+## 1. Context (Input)
+Before starting a code review, I must:
+- [ ] Check the `task.md` and feature-specific `tasks.md` to understand the goal.
+- [ ] Identify the specific skills and blueprints relevant to the PR.
+- [ ] Review previous feedback in the conversation to avoid repeating requests.
 
-## Architectural Consistency
+## 2. Contract (Output)
+When performing a review, I will deliver:
+- Actionable feedback on architectural consistency.
+- Performance and accessibility optimization suggestions.
+- Verification that all "Guardrails" have been followed.
+- Updates to the task tracking files upon completion.
 
-1.  **Task Management**: Is the current task being tracked? **Update `task.md` and feature-specific `tasks.md` AS SOON AS a task is completed.**
-2.  **Component Responsibility**: Does the component do too much? (Should be split if >300 lines).
-3.  **Inversion of Control**: Are dependencies injected properly? (Avoid `new Service()`).
-4.  **Encapsulation**: MUST use native private fields (`#state`) over TypeScript `private` for truly private state.
-4.  **Signal Usage**: Are we using Signals for state and `computed` for derived data? Avoid `manual effects` where possible.
+## 3. Guardrails
+- **NEVER** nitpick on formatting; assume Prettier/Lint handles it.
+- **NEVER** be subjective; back up every suggestion with project patterns or official documentation.
+- **NEVER** approve a PR if a core "Guardrail" from any relevant skill is violated.
+- **ALWAYS** check for "Dead Code" or unnecessary imports.
+- **ALWAYS** ensure that public fields/methods have appropriate types and documentation.
+- **ALWAYS** insist on native private fields (`#state`) for truly encapsulated state.
 
-## Performance Checklist
+## 4. Gold Standard Patterns
 
-1.  **Subscription Management**: Are RxJS subscriptions closed? (Use `takeUntilDestroyed` or pipe to Signals).
-2.  **Change Detection**: Is `OnPush` strategy being used where appropriate?
-3.  **Expensive Computations**: Are heavy functions wrapped in `computed` signals to avoid re-calculation?
-4.  **Signal Updates**: Ensure we are not triggering circular signal updates.
+### Key Snippet: Capsule Logic
+```typescript
+export class ExampleComponent {
+  // ✅ DO: Use native private fields
+  #internalState = signal(0);
 
-## Accessibility (A11y)
+  // ❌ DON'T: Use TypeScript private for runtime-visible state
+  private oldPrivate = signal(0);
+}
+```
 
-1.  **Semantic HTML**: Are we using buttons for actions and links for navigation?
-2.  **ARIA Roles**: Do interactive elements have appropriate `aria-label` or `role`?
-3.  **Keyboard Navigation**: Can the feature be navigated using only the keyboard?
-
-## Do's and Don'ts
-
-### ✅ Do
--   Suggest improvements that increase maintainability.
--   Look for "Dead Code" or unused imports.
--   Ensure all public APIs have basic documentation/types.
-
-### ❌ Don't
--   Nitpick on formatting (let Prettier handle it).
--   Be subjective; back up suggestions with documentation or patterns from `AGENTS.md`.
+## 5. Verification (Checklist)
+- [ ] Dependencies are injected using `inject()`.
+- [ ] Subscriptions are managed (e.g., `takeUntilDestroyed`).
+- [ ] Change detection is set to `OnPush`.
+- [ ] Signals are used for state and `computed` for transformations.
+- [ ] A11y rules (buttons vs links, aria-labels) are followed.
+- [ ] `task.md` is updated correctly.

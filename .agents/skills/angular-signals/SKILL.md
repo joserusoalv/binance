@@ -5,27 +5,51 @@ description: Best practices and patterns for Signal-based state management in An
 
 # Angular Signals Skill
 
-## Core Patterns
+## 1. Context (Input)
+Before implementing signals, I must:
+- [ ] Determine if the state is local (component) or shared (service).
+- [ ] Identify dependencies to see if a `computed()` signal is needed.
+- [ ] Check if the state needs to be writable or read-only for consumers.
 
-- **Local State**: Use `signal()` within components for UI state.
-- **Computed Value**: Use `computed()` for any state derived from other signals.
-- **Side Effects**: Use `effect()` sparingly, primarily for external interactions (e.g., logging, manual DOM manipulation).
-- **Communication**: Use `input()`, `output()`, and `model()` for component communication.
-- **Services**: Expose signals from services, keeping setters private or controlled via methods.
+## 2. Contract (Output)
+When using signals, I will deliver:
+- Reactive state using `signal()`.
+- Derived state using `computed()`.
+- Controlled access in services using `asReadonly()`.
+- Component communication via `input()`, `output()`, and `model()`.
 
-## Dos and Don'ts
+## 3. Guardrails
+- **NEVER** use `mutate()` (deprecated).
+- **NEVER** write to signals inside a `computed()` or directly in a template.
+- **NEVER** use `effect()` for state propagation; use `computed()` instead.
+- **ALWAYS** use `computed()` for any state derived from other signals.
+- **ALWAYS** keep signal setters private in services, exposing only the readonly version.
 
-- **DO** use `update()` or `set()` to change values.
-- **DO NOT** use `mutate()` (deprecated).
-- **DO NOT** write to signals inside a `computed()` or template.
-
-## State Management Patterns
-
-- **Signal State**: Use signals for all local component state.
-- **Derived State**: Use `computed()` for all transformations and derivations.
-- **Immutability**: Keep transformations pure and predictable.
-- **Updates**: Do NOT use `mutate`. Use `update` or `set` to trigger changes.
-- **Effect Usage**: Use `effect()` only for side effects like logging or external DOM APIs, never for state propagation.
-
-## References
+## 4. Gold Standard Patterns
+Refer to these blueprints:
 - [Reactive Service Blueprint](./blueprints/signal-service.md)
+
+### Key Snippet: Service State
+```typescript
+@Injectable({ providedIn: 'root' })
+export class DataService {
+  #state = signal<DataState>({ items: [], loading: false });
+  
+  // Expose as readonly
+  state = this.#state.asReadonly();
+  
+  // Derived state
+  itemsCount = computed(() => this.state().items.length);
+
+  updateItems(items: Item[]) {
+    this.#state.update(s => ({ ...s, items }));
+  }
+}
+```
+
+## 5. Verification (Checklist)
+- [ ] `computed()` is used for all derived data.
+- [ ] `effect()` is used ONLY for external side effects (logging, DOM APIs).
+- [ ] No circular signal updates are present.
+- [ ] Service state is exposed via `asReadonly()`.
+- [ ] `update()` or `set()` is used instead of manual assignments.
