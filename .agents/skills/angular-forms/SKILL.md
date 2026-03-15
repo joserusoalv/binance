@@ -1,62 +1,40 @@
 ---
 name: Angular Forms
-description: Best practices for Reactive Forms, validation, and CVA in Angular 21.
+description: Strict reactive forms standards with hard-typed contracts and Signal integration in Angular 21.
 ---
 
 # Angular Forms Skill
 
 ## 1. Context (Input)
 
-Before starting form-related work, I must:
-
-- [ ] Check if a data model (interface) already exists for the form values.
-- [ ] Verify if the project uses a custom `FormErrorsComponent` or similar for error display.
-- [ ] Identify if there are existing custom validators that can be reused.
+- [ ] **Contract Definition**: Explicitly define the `Value` interface (data) and the `Controls` interface (form structure) before coding.
+- [ ] **Validation Strategy**: Identify which fields require sync vs. async validation.
+- [ ] **A11y Map**: Verify the project's standard for linking error messages (IDs and `aria-describedby`).
 
 ## 2. Contract (Output)
 
-When implementing a form, I will deliver:
-
-- A strictly typed `FormGroup` (or `FormArray`/`FormControl`).
-- An interface/type defining the form's value structure.
-- Accessible templates with proper labels and error associations.
-- Clean integration with components using `OnPush` and Signals.
+- **Strictly Typed FormGroup**: Use of `FormGroup<T>` where `T` is a mandatory interface of controls.
+- **Signal-Based View**: Form state and value changes exposed via `toSignal` for template consumption.
+- **CVA Integration**: Reusable UI inputs must implement `ControlValueAccessor`.
 
 ## 3. Guardrails
 
-- **NEVER** use Template-driven forms (`ngModel` in forms).
-- **NEVER** use `any` for form types; use explicit interfaces.
-- **NEVER** use `this.form.get('key')`; always use `this.form.controls.key` for type safety.
-- **ALWAYS** use `nonNullable` controls/groups via `NonNullableFormBuilder`.
-- **ALWAYS** add `Validators.required` to optional fields that shouldn't be null but can be empty.
+- **NEVER** rely on implicit type inference for `FormGroup`. **ALWAYS** type it explicitly to block unauthorized control injection.
+- **NEVER** use `FormGroup.get('key')`. Use the type-safe `form.controls.key`.
+- **NEVER** use `patchValue` inside an `effect` for initialization. Use **`linkedSignal`** to reset/sync form state with external inputs.
+- **ALWAYS** use `NonNullableFormBuilder` (via `fb.nonNullable`) to ensure type consistency and avoid `null` leaks.
+- **ALWAYS** link error messages to inputs using `aria-describedby` for WCAG AA compliance.
 
 ## 4. Gold Standard Patterns
 
-The primary source of truth for implementation is the:
+Refer to this blueprint for the strict implementation of typed forms:
 
 - [Reactive Form Blueprint](./blueprints/reactive-form.md)
 
-### Key Snippet: Typed Group
-
-```typescript
-interface UserForm {
-  name: FormControl<string>;
-  age: FormControl<number>;
-}
-
-const fb = inject(NonNullableFormBuilder);
-
-const form = fb.group<UserForm>({
-  name: fb.control(''),
-  age: fb.control(0),
-});
-```
-
 ## 5. Verification (Checklist)
 
-- [ ] `ReactiveFormsModule` is imported in the component.
-- [ ] `FormGroup` is typed with a dedicated interface.
-- [ ] `this.fb.nonNullable` is used for initialization.
-- [ ] Error messages use `aria-describedby` for accessibility.
-- [ ] Submit button is disabled based on `form.invalid` or `form.pending`.
-- [ ] Values are reactive (e.g., using `toSignal(form.valueChanges)`).
+- [ ] `FormGroup` is explicitly bound to a `Controls` interface.
+- [ ] `NonNullableFormBuilder` is injected and used for all initializations.
+- [ ] Form values are converted to signals via `toSignal(form.valueChanges)`.
+- [ ] No `any` or manual type casting exists in the form logic.
+- [ ] Submission logic handles `form.pending` (for async validators) and `form.invalid`.

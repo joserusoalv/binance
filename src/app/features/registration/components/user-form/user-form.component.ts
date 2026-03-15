@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, output, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { form } from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -51,20 +52,18 @@ export interface UserData {
       justify-content: flex-end;
     }
   `,
-  imports: [
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserFormComponent {
   formSubmitted = output<UserData>();
 
   userForm = new FormGroup({
     name: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
-    email: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.email] })
+    email: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.email],
+    }),
   });
 
   onSubmit() {
@@ -72,5 +71,8 @@ export class UserFormComponent {
       this.formSubmitted.emit(this.userForm.getRawValue());
     }
   }
-}
 
+  asd = signal({ nombre: '' });
+
+  myForm = form(this.asd);
+}
